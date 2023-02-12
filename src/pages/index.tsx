@@ -1,15 +1,12 @@
 import Head from "next/head";
 import Image from "next/image";
 import LoginScreen from "./LoginScreen";
+import axios from "axios";
 
 import { useState, Fragment } from "react";
-import { Dialog, Menu, Transition } from "@headlessui/react";
+import { Dialog, Transition } from "@headlessui/react";
 
-import {
-
-  signInWithPopup,
-  signOut,
-} from "firebase/auth";
+import { signInWithPopup, signOut } from "firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
 
 import { FirebaseAuth, GoogleProvider } from "./FirebaseService";
@@ -25,6 +22,57 @@ function logOut() {
 export default function App() {
   let [isOpen, setIsOpen] = useState(false);
   const [user, loading, error] = useAuthState(FirebaseAuth);
+  const [todo, setTodo] = useState("");
+
+  const submit = async () => {
+    // const data = await axios({
+    //   method: "POST",
+    //   url: "/api/todo",
+    //   data: {
+    //     todoListName: "More All",
+    //     todoListItems: [
+    //       // {
+    //       //   name: "Write Essay",
+    //       //   complete: true,
+    //       // },
+    //       {
+    //         name: "Make More money",
+    //         complete: false,
+    //       },
+    //       {
+    //         name: "Make Friends",
+    //         complete: false,
+    //       },
+    //       {
+    //         name: "Make more time",
+    //         complete: false,
+    //       },
+    //     ],
+    //   },
+    // });
+    // const user = await axios({
+    //   method: "POST",
+    //   url: "/api/createUser",
+    //   data: {
+    //     userEmail: "test@test.co.tz",
+    //   },
+    // });
+
+
+    // console.log("Posted");
+
+
+
+    const todos = await axios({
+      method: "GET",
+      url: "/api/getTodos",
+    });
+
+    console.log(todos)
+  };
+
+
+  // console.log(submit)
 
   function closeModal() {
     setIsOpen(false);
@@ -44,38 +92,39 @@ export default function App() {
 
   if (error) {
     console.log(error);
-    return (
-      <div>
-        <h1>Error: {error}</h1>
-      </div>
-    );
+    return <h1>Error: {error}</h1>;
   }
 
   if (user) {
     return (
       <div className="h-screen bg-white ">
         <div className="flex  w-full items-center justify-between p-4">
-          <h1 className="uppercase text-xl">Todo App</h1>
+          <h1 className="text-xl font-semibold uppercase">Todo App</h1>
           <div className="flex items-center  space-x-4 ">
             <div className="space-y-2">
-
-            <h1 className="">{user.displayName}</h1>
-            <button onClick={() => logOut()}className="bg-red-200 px-4 rounded-full text-red-800">Log Out</button>
+              <h1 className="">{user.displayName}</h1>
+              <button
+                onClick={() => logOut()}
+                className="rounded-full bg-red-200 px-4 text-red-800"
+              >
+                Log Out
+              </button>
             </div>
-            <img
-              className="h-14 w-14 rounded-full bg-red-700"
-              src={user.photoURL}
-            />
+            <img className="h-14 w-14 rounded-full" src={user.photoURL} />
           </div>
         </div>
         <div className="flex  items-center justify-center space-x-4 py-4">
           <input
             className="h-12 w-1/2 rounded-md border border-gray-500 bg-transparent px-2  focus:outline-none focus:ring-gray-200 "
             placeholder="Search"
+            value={todo}
+            onChange={(e) => setTodo(e.target.value)}
           />
           <button
             type="button"
-            onClick={openModal}
+            onClick={() => {
+              submit();
+            }}
             className="h-12 rounded-md bg-sky-800 px-2 text-white "
           >
             Create a todo
