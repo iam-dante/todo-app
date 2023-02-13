@@ -358,7 +358,7 @@ export default function HomeScreen(props) {
                           >
                             <input
                               type="checkbox"
-                              checked={inputFields.listItems[index].complete}
+                              // checked={inputFields.listItems[index].complete}
                               name="complete"
                               onChange={(event) => {
                                 handleFormChange_(index, event);
