@@ -2,20 +2,13 @@ import { useState} from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { FirebaseAuth } from "./FirebaseService";
 
-import HomeScreen from "./HomeScreen";
-import LoginScreen from "./LoginScreen";
+import HomeScreen from "./Screens/HomeScreen";
+import LoginScreen from "./Screens/LoginScreen";
 
 export default function App() {
   const [isOpen, setIsOpen] = useState(false);
   const [user, loading, error] = useAuthState(FirebaseAuth);
 
-  function closeModal() {
-    setIsOpen(false);
-  }
-
-  function openModal() {
-    setIsOpen(true);
-  }
 
   if (loading) {
     return (
@@ -30,6 +23,7 @@ export default function App() {
   }
 
   if (user) {
+
     return <HomeScreen />;
   }
 

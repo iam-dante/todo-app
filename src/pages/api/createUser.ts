@@ -15,13 +15,20 @@ export default async function handler(
   if (req.method === "POST") {
     const data = req.body;
 
-    console.log(data);
+    // console.log(data.userEmail);
 
-    const user = await prisma.user.create({
-      data: {
-        email: data.userEmail
+    const isuser = await prisma.user.findFirst({
+      where: {
+        email: data.userEmail,
       },
     });
+
+    // console.log(isuser);
+    // const user = await prisma.user.create({
+    //   data: {
+    //     email: data.userEmail
+    //   },
+    // });
 
     return res.status(200).json({ name: "Successful" });
   } else {

@@ -17,7 +17,7 @@ export default async function handler(
 
     const User = await prisma.user.findFirst({
       where: {
-        email: "brynagasper@gmail.com",
+        email: "test@test.co.tz",
       },
     });
 
@@ -27,6 +27,7 @@ export default async function handler(
         userId: User?.id,
       },
       select: {
+        id:true,
         name: true,
         todoItems: true,
       },
