@@ -9,7 +9,7 @@ import { signOut } from "firebase/auth";
 
 // const prisma = new PrismaClient();
 
-export default function HomeScreen() {
+export default function HomeScreen(props) {
   const [user] = useAuthState(FirebaseAuth);
 
   const [isOpen, setIsOpen] = useState(false);
@@ -26,7 +26,7 @@ export default function HomeScreen() {
   const [editInput, setEditInput] = useState({
     listid: "",
     listname: "",
-    listItems: [{ name: "", complete: false }],
+    listItems: [{ id: undefined, name: "", complete: false }],
   });
 
   //Listener fields
@@ -80,7 +80,7 @@ export default function HomeScreen() {
   };
 
   const addEditFields = () => {
-    let newfield = { name: "", complete: false };
+    let newfield = { id:"", name: "", complete: false };
     setEditInput((pv) => ({
       ...pv,
       listItems: [...pv.listItems, newfield],
@@ -121,6 +121,8 @@ export default function HomeScreen() {
       listname: "",
       listItems: [{ name: "", complete: false }],
     });
+
+    location.reload();
   };
 
   const submitEditTodo = async (listId: String) => {
@@ -140,6 +142,8 @@ export default function HomeScreen() {
       listItems: [{ name: "", complete: false }],
     });
 
+    location.reload();
+
     // axios
     //   .post("/api/createUser", {
     //     userEmail: user?.email,
@@ -147,6 +151,16 @@ export default function HomeScreen() {
     //   .then(function (response) {
     //     console.log(response.status);
     //   });
+  };
+
+  const deleteTodoItem = async (id: String) => {
+    const res = await axios({
+      method: "POST",
+      url: "/api/deleteTodoItem",
+      data: {
+        id: id,
+      },
+    });
   };
 
   function closeModal() {
@@ -199,24 +213,26 @@ export default function HomeScreen() {
   // const resData = fetchData()
   // console.log(resData.data)
 
-  const playdata = [
-    {
-      id: "63eb4bcbf99438a328fe2149",
-      name: "Todo List",
-      todoItems: [
-        {
-          id: "63eb4ac3f99438a328fe2142",
-          name: "Make More money",
-          complete: true,
-        },
-        {
-          id: "63eb4ac3f99438a328fe2143",
-          name: "Make Friends",
-          complete: false,
-        },
-      ],
-    },
-  ];
+  // const playdata = [
+  //   {
+  //     id: "63ebbb8e42b87b679c13ce56",
+  //     name: "Todo List",
+  //     todoItems: [
+  //       {
+  //         id: "63eb4ac3f99438a328fe2142",
+  //         name: "Make More money",
+  //         complete: true,
+  //       },
+  //       // {
+  //       //   id: "63eb4ac3f99438a328fe2143",
+  //       //   name: "Make Friends",
+  //       //   complete: false,
+  //       // },
+  //     ],
+  //   },
+  // ];
+
+  // console.log(props.data)
 
   function TodoItemComponent(props) {
     const [complete, setComplete] = useState(props.complete);
@@ -257,9 +273,9 @@ export default function HomeScreen() {
           <img className="h-14 w-14 rounded-full" src={user?.photoURL} />
         </div>
       </div>
-      <div className="flex  items-center justify-center space-x-4 py-4">
+      <div className="flex  items-center justify-center space-x-4 py-4 px-2">
         <input
-          className="h-12 w-1/2 rounded-md border border-gray-500 bg-transparent px-2  focus:outline-none focus:ring-gray-200 "
+          className="h-12 w-full  rounded-md border border-gray-500 bg-transparent px-2 focus:outline-none  focus:ring-gray-200 md:w-1/2 "
           placeholder="Search"
           // value={todo}
           // onChange={(e) => setTodo(e.target.value)}
@@ -269,14 +285,14 @@ export default function HomeScreen() {
           onClick={() => {
             openModal();
           }}
-          className="h-12 rounded-md bg-sky-800 px-2 text-white "
+          className="h-12 rounded-md bg-sky-800 px-2 text-sm text-white md:text-base "
         >
           Create a todo
         </button>
       </div>
 
-      <div className="flex h-screen flex-col items-center space-y-4 px-4">
-        {playdata?.map((value) => {
+      <div className="flex  flex-col items-center space-y-4 px-4 py-6">
+        {props.data?.map((value) => {
           //  console.log(vl)
           return (
             <div
@@ -526,9 +542,9 @@ export default function HomeScreen() {
                         return (
                           <div
                             key={index}
-                            className="flex items-center space-x-3"
+                            className="flex items-center space-x-3 "
                           >
-                            <div className="flex items-center space-x-3">
+                            <div className="flex w-full items-center space-x-3">
                               <input
                                 type="checkbox"
                                 // disabled={vl.complete}
@@ -556,7 +572,10 @@ export default function HomeScreen() {
                             </div>
                             <button
                               type="button"
-                              onClick={() => removeEditFields(index)}
+                              onClick={() => {
+                                removeEditFields(index);
+                                deleteTodoItem(value.id)
+                              }}
                             >
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -608,26 +627,26 @@ export default function HomeScreen() {
   );
 }
 
-// export async function getServerSideProps() {
-//   // const res = await axios({
-//   //   method: "GET",
-//   //   url: "https://catfact.ninja/fact",
-//   // });
+// export async function getStaticProps() {
+
+//   const res = await axios({
+//     method: "GET",
+//     url: "api/getTodos",
+//   });
+
+//   // console.log(res);
 
 //   // const res = await fetch("https://catfact.ninja/fact");
 //   // const data = await res.json();
 
-//   // console.log(res);
-
 //   // console.log(data)
-
 //   // const User = await prisma.user.findFirst({
 //   //   where: {
 //   //     email: "test@test.co.tz",
 //   //   },
 //   // });
 
-//   // // Read User Todolist
+//   // Read User Todolist
 //   // const Todolist = await prisma.todoList.findMany({
 //   //   where: {
 //   //     userId: User?.id,
@@ -639,11 +658,11 @@ export default function HomeScreen() {
 //   //   },
 //   // });
 
-//   console.log(Todolist);
+//   // console.log(Todolist);
 
 //   return {
 //     props: {
-//       todo: Todolist,
+//       todo: "somthin",
 //     }, // will be passed to the page component as props
 //   };
 // }

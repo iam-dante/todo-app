@@ -14,27 +14,17 @@ export default async function handler(
 ) {
   if (req.method === "POST") {
     const data = req.body;
-    console.log(data)
-    
-    const User = await prisma.user.findFirst({
+
+    console.log(data.id);
+
+    const deleteTodoList = await prisma.todoItem.delete({
       where: {
-        email: "test@test.co.tz",
+        id:data.id
       },
-    });
-
-    const CreateTodo = await prisma.todoList.create({
-      
-      data: {
-        name: data.todoListName,
-        todoItems: {
-          create: [...data.todoListItems],
-        },
-        userId: User?.id,
-      },
-
     });
 
     return res.status(200).json({ name: "Successful" });
+    
   } else {
     console.log("Something");
   }
