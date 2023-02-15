@@ -9,11 +9,10 @@ import axios from "axios";
 
 import { PrismaClient } from "@prisma/client";
 
-// const prisma = new PrismaClient();
+const prisma = new PrismaClient();
 
 export default function App(props) {
   const [user, loading, error] = useAuthState(FirebaseAuth);
-
 
   if (loading) {
     return (
@@ -33,7 +32,7 @@ export default function App(props) {
 
   // user.email;
   // return <HomeScreen data={props.todo} />;
-  return <HomeScreen/>
+  return <HomeScreen />;
 }
 
 // function getBaseUrl() {
@@ -43,72 +42,71 @@ export default function App(props) {
 //   return process.env.VERCEL_URL;
 // }
 
-// export async function getServerSideProps() {
-//   const res = await axios({
-//     method: "GET",
-//     url: `${getBaseUrl()}/api/createUser`,
-//     data:{
+export async function getServerSideProps() {
+  // const user = await prisma.user.create({
+  //   data: {
+  //     email: "vanessaMbuzi@gmail.com",
+  //   },
+  // });
 
-//     }
-//   });
+  const isuser = await prisma.user.findFirst({
+    where: {
+      // email: "vanessaMbuzi@gmail.com"
+      email: "bryangasper2124@gmail.com",
+    },
+  });
 
-//   console.log({ data: res.data });
-//   // const res = await fetch("api/getTodos");
+  // console.log(user);
 
-//   // console.log(res.json());
+  // console.log(isuser);
 
-//   //   const data = await res.json();
-//   //   console.log(data)
+  // GET USERID'S OF TODOLIST
+  const todoId = await prisma.todoList.findUnique({
+    where: {
+      id: "63ed35eeb8d05de16dc45452",
+    },
+  });
 
-//   // const res = await fetch("https://catfact.ninja/fact");
-//   // const data = await res.json();
+  console.log(todoId);
 
-//   // console.log(data)
-//   // const User = await prisma.user.findFirst({
-//   //   where: {
-//   //     email: "test@test.co.tz",
-//   //   },
-//   // });
+  // CREATE A TODOLIST SHARED
 
-//   // Read User Todolist
-//   // const Todolist = await prisma.todoList.findMany({
-//   //   where: {
-//   //     userId: User?.id,
-//   //   },
-//   //   select: {
-//   //     id: true,
-//   //     name: true,
-//   //     todoItems: true,
-//   //   },
-//   // });
+  // const shareTodo = await prisma.todoList.update({
+  //   where: {
+  //     // Todolist Id
+  //     id: "63ed35eeb8d05de16dc45452",
+  //   },
+  //   data: {
+  //     userId: {
+  //       set: ["63ed337bb8d05de16dc45437", "63ed3387b8d05de16dc4543e"],
+  //     },
+  //   },
+  // });
 
-//   // console.log(Todolist);
+  // GET TODOS OF A USER
+  const Todo = await prisma.todoList.findMany({
+    where: {
+      userId: {
+        has: "63ed337bb8d05de16dc45437",
+      },
+    },
 
-//   const User = await prisma.user.findFirst({
-//     where: {
-//       email: "test@test.co.tz",
-//     },
-//   });
+    select: {
+      todoItems: true,
+      name: true,
+      id: true,
+      User: true,
+    },
+  });
 
-//   // Read User Todolist
-//   const Todolist = await prisma.todoList.findMany({
-//     where: {
-//       userId: User?.id,
-//     },
-//     select: {
-//       id: true,
-//       name: true,
-//       todoItems: true,
-//     },
-//   });
+  console.log("-------New Results-------");
+  console.log(Todo);
 
-//   // console.log(Todolist)
-
-//   return {
-//     props: {
-//       todo: Todolist.reverse(),
-//     }, // will be passed to the page component as props
-//     // revalidate:10,
-//     // fallback: true
-//   };
-// }
+  return {
+    props: {
+      // todo: user,
+    }, // will be passed to the page component as props
+    // revalidate:10,
+    // fallback: true
+  };
+}

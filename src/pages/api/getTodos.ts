@@ -3,7 +3,6 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
 import axios from "axios";
 
-
 const prisma = new PrismaClient();
 
 // type Data = {
@@ -15,17 +14,16 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (req.method === "GET") {
-
-    const {email} = req.query
+    const { email } = req.query;
     // console.log("User Email", email)
 
     const User = await prisma.user.findUnique({
       where: {
-        email: email
+        email: email,
       },
-    })
+    });
 
-    if(!User){
+    if (!User) {
       // Read User Todolist
       // const Todolist = await prisma.todoList.findMany({
       //   where: {
@@ -48,18 +46,32 @@ export default async function handler(
         },
       });
 
-      console.log(user)
-    }
-    else{
+      console.log(user);
+    } else {
       // Read User Todolist
+      // const Todolist = await prisma.todoList.findMany({
+      //   where: {
+      //     userId: User?.id,
+      //   },
+      //   select: {
+      //     id: true,
+      //     name: true,
+      //     todoItems: true,
+      //   },
+      // });
+
       const Todolist = await prisma.todoList.findMany({
         where: {
-          userId: User?.id,
+          userId: {
+            has: User?.id,
+          },
         },
+
         select: {
-          id: true,
-          name: true,
           todoItems: true,
+          name: true,
+          id: true,
+          User: true,
         },
       });
 
@@ -107,10 +119,7 @@ export default async function handler(
 
       // return res.status(200).json({ data: Todolist });
     }
-
-  } 
-  
-  else {
+  } else {
     console.log("Something");
   }
 }
