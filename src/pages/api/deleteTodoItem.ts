@@ -17,14 +17,14 @@ export default async function handler(
 
     console.log(data.id);
 
-    const deleteTodoList = await prisma.todoItem.delete({
-      where: {
-        id:data.id
-      },
-    });
-
-    return res.status(200).json({ name: "Successful" });
-    
+    if (data.id) {
+      const deleteTodoList = await prisma.todoItem.delete({
+        where: {
+          id: data.id,
+        },
+      });
+      return res.status(200).json({ name: "Successful" });
+    }
   } else {
     console.log("Something");
   }

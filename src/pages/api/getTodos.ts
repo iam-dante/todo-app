@@ -1,6 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
+import axios from "axios";
 
 
 const prisma = new PrismaClient();
@@ -15,30 +16,101 @@ export default async function handler(
 ) {
   if (req.method === "GET") {
 
-    console.log(req.body)
-    
-    const User = await prisma.user.findFirst({
+    const {email} = req.query
+    // console.log("User Email", email)
+
+    const User = await prisma.user.findUnique({
       where: {
-        email: "test@test.co.tz",
+        email: email
       },
-    });
+    })
 
-    // Read User Todolist
-    const Todolist = await prisma.todoList.findMany({
-      where: {
-        userId: User?.id,
-      },
-      select: {
-        id:true,
-        name: true,
-        todoItems: true,
-      },
-    });
+    if(!User){
+      // Read User Todolist
+      // const Todolist = await prisma.todoList.findMany({
+      //   where: {
+      //     userId: User?.id,
+      //   },
+      //   select: {
+      //     id:true,
+      //     name: true,
+      //     todoItems: true,
+      //   },
+      // });
 
-    // console.log(Todolist);
+      // return res.status(200).json({ data: Todolist });
 
-    return res.status(200).json({ data: Todolist});
-  } else {
+      console.log("Something to happen");
+
+      const user = await prisma.user.create({
+        data: {
+          email: email,
+        },
+      });
+
+      console.log(user)
+    }
+    else{
+      // Read User Todolist
+      const Todolist = await prisma.todoList.findMany({
+        where: {
+          userId: User?.id,
+        },
+        select: {
+          id: true,
+          name: true,
+          todoItems: true,
+        },
+      });
+
+      return res.status(200).json({ data: Todolist });
+
+      // async function fetchData() {
+      //   const todos = await axios({
+      //     method: "POST",
+      //     url: "/api/createUser",
+      //     data:email
+      //   });
+      // }
+
+      // fetchData().then((rs)=>{
+      //   console.log(rs)
+      // })
+
+      console.log("Something is happening");
+
+      // const user = await prisma.user.create({
+      //   data: {
+      //     email: email,
+      //   },
+      // });
+
+      // const User = await prisma.user.findUnique({
+      //   where: {
+      //     email: email,
+      //   },
+      // });
+
+      console.log(User);
+
+      // // Read User Todolist
+      // const Todolist = await prisma.todoList.findMany({
+      //   where: {
+      //     userId: User?.id,
+      //   },
+      //   select: {
+      //     id:true,
+      //     name: true,
+      //     todoItems: true,
+      //   },
+      // });
+
+      // return res.status(200).json({ data: Todolist });
+    }
+
+  } 
+  
+  else {
     console.log("Something");
   }
 }

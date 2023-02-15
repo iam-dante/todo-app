@@ -19,8 +19,7 @@ export default async function handler(
     
     const User = await prisma.user.findFirst({
       where: {
-        email: "test@test.co.tz",
-        // email: UserProfile.user
+        email: data.email
       },
     });
     

@@ -120,6 +120,7 @@ export default function HomeScreen(props) {
       method: "POST",
       url: "/api/createTodo",
       data: {
+        email:user?.email,
         todoListName: inputFields.listname,
         todoListItems: [...inputFields.listItems],
       },
@@ -236,10 +237,18 @@ export default function HomeScreen(props) {
   // console.log(props.data)
   useEffect(() => {
     async function fetchData() {
-      const todos = await axios({
-        method: "GET",
-        url: "/api/getTodos",
+      // const todos = await axios({
+      //   method: "POST",
+      //   url: "/api/getTodos",
+      //   data:"Something"
+      // });
+
+      const todos = await axios.get("api/getTodos", {
+        params: { email: user?.email },
       });
+
+      // console.log(res)
+
       // todos.data.data.map((vl)=>{
       //   dt.push(vl)
       // })
@@ -253,7 +262,7 @@ export default function HomeScreen(props) {
     // console.log("This is data",dt)
 
     data.then((rs) => {
-      // console.log(rs);
+      console.log(rs);
       setData(rs)
     });
   }, []);
