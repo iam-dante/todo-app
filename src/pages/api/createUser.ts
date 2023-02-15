@@ -2,7 +2,12 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
 
+
+import UserProfile from "@/utils/userProfile";
+
+
 const prisma = new PrismaClient();
+
 
 type Data = {
   name: string;
@@ -12,6 +17,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
+
+  // const [user]
   if (req.method === "POST") {
     const data = req.body;
 
@@ -19,7 +26,7 @@ export default async function handler(
 
     const isuser = await prisma.user.findFirst({
       where: {
-        email: data.userEmail,
+        email: UserProfile.email,
       },
     });
 

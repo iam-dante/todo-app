@@ -3,14 +3,22 @@ import { useState, Fragment, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { useAuthState } from "react-firebase-hooks/auth";
 
-import { FirebaseAuth } from "../FirebaseService";
+import { FirebaseAuth } from "../utils/FirebaseService";
 import { signOut } from "firebase/auth";
+
+import useSwr from "swr";
 // import { PrismaClient } from "@prisma/client";
 
 // const prisma = new PrismaClient();
 
 export default function HomeScreen(props) {
   const [user] = useAuthState(FirebaseAuth);
+
+  // Get data
+  // const fetcher = (url: string) => axios.get(url).then((r) => r.data);
+  // const { dt, error } = useSwr(`/api/getTodo/`, fetcher);
+
+  // console.log(dt);
 
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenEdit, setIsOpenEdit] = useState(false);
@@ -80,7 +88,7 @@ export default function HomeScreen(props) {
   };
 
   const addEditFields = () => {
-    let newfield = { id:"", name: "", complete: false };
+    let newfield = { id: undefined, name: "", complete: false };
     setEditInput((pv) => ({
       ...pv,
       listItems: [...pv.listItems, newfield],
@@ -144,13 +152,6 @@ export default function HomeScreen(props) {
 
     location.reload();
 
-    // axios
-    //   .post("/api/createUser", {
-    //     userEmail: user?.email,
-    //   })
-    //   .then(function (response) {
-    //     console.log(response.status);
-    //   });
   };
 
   const deleteTodoItem = async (id: String) => {
@@ -213,26 +214,50 @@ export default function HomeScreen(props) {
   // const resData = fetchData()
   // console.log(resData.data)
 
-  // const playdata = [
-  //   {
-  //     id: "63ebbb8e42b87b679c13ce56",
-  //     name: "Todo List",
-  //     todoItems: [
-  //       {
-  //         id: "63eb4ac3f99438a328fe2142",
-  //         name: "Make More money",
-  //         complete: true,
-  //       },
-  //       // {
-  //       //   id: "63eb4ac3f99438a328fe2143",
-  //       //   name: "Make Friends",
-  //       //   complete: false,
-  //       // },
-  //     ],
-  //   },
-  // ];
+  const playdata = [
+    {
+      id: "63ebbb8e42b87b679c13ce56",
+      name: "Todo List",
+      todoItems: [
+        {
+          id: "63eb4ac3f99438a328fe2142",
+          name: "Make More money",
+          complete: true,
+        },
+        // {
+        //   id: "63eb4ac3f99438a328fe2143",
+        //   name: "Make Friends",
+        //   complete: false,
+        // },
+      ],
+    },
+  ];
 
   // console.log(props.data)
+  useEffect(() => {
+    async function fetchData() {
+      const todos = await axios({
+        method: "GET",
+        url: "/api/getTodos",
+      });
+      // todos.data.data.map((vl)=>{
+      //   dt.push(vl)
+      // })
+
+      // const data = todos.data.data
+      // console.log(data.length)
+
+      return todos.data.data;
+    }
+    var data = fetchData();
+    // console.log("This is data",dt)
+
+    data.then((rs) => {
+      // console.log(rs);
+      setData(rs)
+    });
+  }, []);
+
 
   function TodoItemComponent(props) {
     const [complete, setComplete] = useState(props.complete);
@@ -292,7 +317,7 @@ export default function HomeScreen(props) {
       </div>
 
       <div className="flex  flex-col items-center space-y-4 px-4 py-6">
-        {props.data?.map((value) => {
+        {data?.map((value) => {
           //  console.log(vl)
           return (
             <div
@@ -574,7 +599,7 @@ export default function HomeScreen(props) {
                               type="button"
                               onClick={() => {
                                 removeEditFields(index);
-                                deleteTodoItem(value.id)
+                                deleteTodoItem(value.id);
                               }}
                             >
                               <svg

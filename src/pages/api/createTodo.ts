@@ -2,6 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
 
+import UserProfile from "@/utils/userProfile";
 const prisma = new PrismaClient();
 
 type Data = {
@@ -19,8 +20,10 @@ export default async function handler(
     const User = await prisma.user.findFirst({
       where: {
         email: "test@test.co.tz",
+        // email: UserProfile.user
       },
     });
+    
 
     const CreateTodo = await prisma.todoList.create({
       

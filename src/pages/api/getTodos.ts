@@ -15,6 +15,8 @@ export default async function handler(
 ) {
   if (req.method === "GET") {
 
+    console.log(req.body)
+    
     const User = await prisma.user.findFirst({
       where: {
         email: "test@test.co.tz",
