@@ -67,6 +67,7 @@ export async function getServerSideProps() {
     },
   });
 
+  console.log("-------New Results-------");
   console.log(todoId);
 
   // CREATE A TODOLIST SHARED
@@ -84,23 +85,22 @@ export async function getServerSideProps() {
   // });
 
   // GET TODOS OF A USER
-  const Todo = await prisma.todoList.findMany({
-    where: {
-      userId: {
-        has: "63ed337bb8d05de16dc45437",
-      },
-    },
+  // const Todo = await prisma.todoList.findMany({
+  //   where: {
+  //     userId: {
+  //       has: "63ed337bb8d05de16dc45437",
+  //     },
+  //   },
 
-    select: {
-      todoItems: true,
-      name: true,
-      id: true,
-      User: true,
-    },
-  });
+  //   select: {
+  //     todoItems: true,
+  //     name: true,
+  //     id: true,
+  //     User: true,
+  //   },
+  // });
 
-  console.log("-------New Results-------");
-  console.log(Todo);
+  // console.log(Todo);
 
   return {
     props: {

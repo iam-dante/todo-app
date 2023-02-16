@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState, Fragment, useEffect } from "react";
+import { useState, Fragment, useEffect, use } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { useAuthState } from "react-firebase-hooks/auth";
 
@@ -8,29 +8,23 @@ import { signOut } from "firebase/auth";
 
 import Image from "next/image";
 
-import useSwr from "swr";
-// import { PrismaClient } from "@prisma/client";
-
-// const prisma = new PrismaClient();
-
 export default function HomeScreen(props) {
   const [user] = useAuthState(FirebaseAuth);
 
-  // Get data
-  // const fetcher = (url: string) => axios.get(url).then((r) => r.data);
-  // const { dt, error } = useSwr(`/api/getTodo/`, fetcher);
-
-  // console.log(dt);
+  const [shareData, setshareData] = useState({
+    email: "",
+    todoId: "",
+  });
 
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenEdit, setIsOpenEdit] = useState(false);
   const [isOpenShare, setIsOpenShare] = useState(false);
 
-  const [data, setData] = useState(undefined);
+  const [data, setData] = useState([]);
 
   const [inputFields, setInputFields] = useState({
     listname: "",
-    listItems: [{ name: "", complete: false }],
+    listItems: [{ id: undefined, name: "", complete: false }],
   });
 
   const [editInput, setEditInput] = useState({
@@ -99,7 +93,7 @@ export default function HomeScreen(props) {
 
   // Add new fields
   const addFields = () => {
-    let newfield = { name: "", complete: false };
+    let newfield = { id: undefined, name: "", complete: false };
     setInputFields((pv) => ({
       ...pv,
 
@@ -156,6 +150,23 @@ export default function HomeScreen(props) {
     location.reload();
   };
 
+  const submitShareTodo = async () => {
+    const res = await axios({
+      method: "POST",
+      url: "/api/shareTodo",
+      data: {
+        email: shareData.email,
+        todoId: shareData.todoId,
+      },
+    });
+    closeModalShare();
+    setshareData({
+      email: "",
+      todoId: "",
+    });
+    location.reload();
+  };
+
   const deleteTodoItem = async (id: String) => {
     const res = await axios({
       method: "POST",
@@ -170,7 +181,7 @@ export default function HomeScreen(props) {
     setIsOpen(false);
     setInputFields({
       listname: "",
-      listItems: [{ name: "", complete: false }],
+      listItems: [{ id: undefined, name: "", complete: false }],
     });
   }
 
@@ -180,6 +191,7 @@ export default function HomeScreen(props) {
 
   function closeModalEdit() {
     setIsOpenEdit(false);
+    location.reload();
   }
 
   function openModalEdit() {
@@ -198,77 +210,15 @@ export default function HomeScreen(props) {
     signOut(FirebaseAuth);
   }
 
-  // var data = []
-
-  // useEffect(() => {
-  //   async function fetchData() {
-  //     const todos = await axios({
-  //       method: "GET",
-  //       url: "/api/getTodos",
-  //     });
-  //     setData(todos.data)
-  //   }
-  //   fetchData();
-
-  // }, []);
-
-  // async function fetchData() {
-  //   const todos = await axios({
-  //     method: "GET",
-  //     url: "/api/getTodos",
-  //   });
-
-  //   return todos.data
-  // }
-
-  // const resData = fetchData()
-  // console.log(resData.data)
-
-  // const playdata = [
-  //   {
-  //     id: "63ebbb8e42b87b679c13ce56",
-  //     name: "Todo List",
-  //     todoItems: [
-  //       {
-  //         id: "63eb4ac3f99438a328fe2142",
-  //         name: "Make More money",
-  //         complete: true,
-  //       },
-  //       // {
-  //       //   id: "63eb4ac3f99438a328fe2143",
-  //       //   name: "Make Friends",
-  //       //   complete: false,
-  //       // },
-  //     ],
-  //   },
-  // ];
-
-  // console.log(props.data)
   useEffect(() => {
     async function fetchData() {
-      // const todos = await axios({
-      //   method: "POST",
-      //   url: "/api/getTodos",
-      //   data:"Something"
-      // });
-
       const todos = await axios.get("api/getTodos", {
         params: { email: user?.email },
       });
 
-      // console.log(res)
-
-      // todos.data.data.map((vl)=>{
-      //   dt.push(vl)
-      // })
-
-      // const data = todos.data.data
-      // console.log(data.length)
-
       return todos.data.data;
     }
     var data = fetchData();
-    // console.log("This is data",dt)
 
     data.then((rs) => {
       console.log(rs);
@@ -334,6 +284,7 @@ export default function HomeScreen(props) {
 
       <div className="flex  flex-col items-center space-y-4 px-4 py-6">
         {data?.map((value) => {
+          console.log(value);
           return (
             <div
               key={value.id}
@@ -406,6 +357,10 @@ export default function HomeScreen(props) {
                   className="flex items-center rounded-full p-3 hover:bg-sky-100"
                   onClick={() => {
                     openModalShare();
+                    setshareData((pv) => ({
+                      ...pv,
+                      todoId: value.id,
+                    }));
                   }}
                 >
                   <svg
@@ -709,16 +664,16 @@ export default function HomeScreen(props) {
                 leaveTo="opacity-0 scale-95"
               >
                 <Dialog.Panel className="w-full max-w-xl transform overflow-hidden rounded-md bg-white p-6 text-left align-middle shadow-xl transition-all">
-                  <form className=" space-y-4" onSubmit={submitCreateTodo}>
+                  <form className=" space-y-4" onSubmit={submitShareTodo}>
                     <h1>Enter email to share this todo</h1>
                     <Dialog.Title as="h3" className=" leading-6 text-gray-900">
                       <input
                         type="text"
-                        value={inputFields.listname}
+                        value={shareData.email}
                         onChange={(e) => {
-                          setInputFields((pv) => ({
+                          setshareData((pv) => ({
                             ...pv,
-                            listname: e.target.value,
+                            email: e.target.value,
                           }));
                         }}
                         className="w-full text-xl font-normal focus:outline-none"
@@ -784,7 +739,7 @@ export default function HomeScreen(props) {
                       <button
                         type="button"
                         className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                        onClick={() => submitCreateTodo()}
+                        onClick={submitShareTodo}
                       >
                         Share
                       </button>

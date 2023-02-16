@@ -15,7 +15,7 @@ export default async function handler(
 ) {
   if (req.method === "GET") {
     const { email } = req.query;
-    // console.log("User Email", email)
+    
 
     const User = await prisma.user.findUnique({
       where: {
@@ -48,17 +48,7 @@ export default async function handler(
 
       console.log(user);
     } else {
-      // Read User Todolist
-      // const Todolist = await prisma.todoList.findMany({
-      //   where: {
-      //     userId: User?.id,
-      //   },
-      //   select: {
-      //     id: true,
-      //     name: true,
-      //     todoItems: true,
-      //   },
-      // });
+    
 
       const Todolist = await prisma.todoList.findMany({
         where: {
@@ -77,47 +67,7 @@ export default async function handler(
 
       return res.status(200).json({ data: Todolist });
 
-      // async function fetchData() {
-      //   const todos = await axios({
-      //     method: "POST",
-      //     url: "/api/createUser",
-      //     data:email
-      //   });
-      // }
-
-      // fetchData().then((rs)=>{
-      //   console.log(rs)
-      // })
-
-      console.log("Something is happening");
-
-      // const user = await prisma.user.create({
-      //   data: {
-      //     email: email,
-      //   },
-      // });
-
-      // const User = await prisma.user.findUnique({
-      //   where: {
-      //     email: email,
-      //   },
-      // });
-
-      console.log(User);
-
-      // // Read User Todolist
-      // const Todolist = await prisma.todoList.findMany({
-      //   where: {
-      //     userId: User?.id,
-      //   },
-      //   select: {
-      //     id:true,
-      //     name: true,
-      //     todoItems: true,
-      //   },
-      // });
-
-      // return res.status(200).json({ data: Todolist });
+      
     }
   } else {
     console.log("Something");
