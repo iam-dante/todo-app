@@ -19,7 +19,8 @@ export default function App() {
   }
 
   if (error) {
-    return <Toaster />;
+    // return <Toaster />;
+    console.log("something went wrong")
   }
 
   if (!user) {
