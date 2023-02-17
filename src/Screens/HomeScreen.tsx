@@ -10,19 +10,20 @@ import { signOut } from "firebase/auth";
 // import nodemailer from "Nodemailer";
 import { MailtrapClient } from "mailtrap"
 
-export default function HomeScreen() {
+export default function HomeScreen():JSX.Element {
+
+  const [data, setData] = useState([]);
   const [user] = useAuthState(FirebaseAuth);
-  const [shareData, setshareData] = useState({
-    email: "",
-    todoId: "",
-  });
 
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenEdit, setIsOpenEdit] = useState(false);
   const [isOpenShare, setIsOpenShare] = useState(false);
 
-  const [data, setData] = useState([]);
-
+  const [shareData, setshareData] = useState({
+    email: "",
+    todoId: "",
+  });
+  
   const [inputFields, setInputFields] = useState({
     listname: "",
     listItems: [{ id: undefined, name: "", complete: false }],
@@ -33,10 +34,9 @@ export default function HomeScreen() {
     listname: "",
     listItems: [{ id: undefined, name: "", complete: false }],
   });
-
   
-  const handleFormChange = (index: number, event) => {
-    let data = [...inputFields.listItems];
+  const handleFormChange = (index: number, event:any) => {
+    let data:any = [...inputFields.listItems];
     data[index][event.target.name] = event.target.value;
     setEditInput((pv) => ({
       ...pv,
@@ -44,8 +44,8 @@ export default function HomeScreen() {
     }));
   };
 
-  const handleFormChange_ = (index: number, event) => {
-    let data = [...inputFields.listItems];
+  const handleFormChange_ = (index: number, event:any) => {
+    let data:any = [...inputFields.listItems];
     data[index][event.target.name] = event.target.checked;
     setInputFields((pv) => ({
       ...pv,
@@ -53,19 +53,17 @@ export default function HomeScreen() {
     }));
   };
 
-  const handleEditChange = (index: number, event) => {
-    let data = [...editInput.listItems];
-
+  const handleEditChange = (index: number, event:any) => {
+    let data:any = [...editInput.listItems];
     data[index][event.target.name] = event.target.value;
-
     setInputFields((pv) => ({
       ...pv,
       listItems: [...data],
     }));
   };
 
-  const handelCheck = (index: number, event) => {
-    let data = [...editInput.listItems];
+  const handelCheck = (index: number, event:any) => {
+    let data:any = [...editInput.listItems];
     data[index][event.target.name] = event.target.checked;
     setInputFields((pv) => ({
       ...pv,
@@ -124,7 +122,7 @@ export default function HomeScreen() {
     setIsOpen(false);
     setInputFields({
       listname: "",
-      listItems: [{ name: "", complete: false }],
+      listItems: [{id:undefined, name: "", complete: false }],
     });
 
     location.reload();
@@ -225,10 +223,10 @@ export default function HomeScreen() {
     });
   }, [user]);
 
-  function TodoItemComponent(props:{name:String, id:String, complete:boolean}) {
+  function TodoItemComponent(props:{name:String,  complete:boolean}) {
 
     return (
-      <div key={props.id} className="flex items-center space-x-3">
+      <div  className="flex items-center space-x-3">
         <input
           type="checkbox"
           disabled={true}
@@ -283,7 +281,7 @@ export default function HomeScreen() {
               Log Out
             </button>
           </div>
-          <img alt="" className="h-14 w-14 rounded-full" src={user?.photoURL} />
+          <img alt="" className="h-14 w-14 rounded-full" src={user?.photoURL}/>
         </div>
       </div>
 
@@ -297,8 +295,8 @@ export default function HomeScreen() {
         <button
           type="button"
           onClick={() => {
-            // openModal();
-            sendEmail();
+            openModal();
+            // sendEmail();
           }}
           className="h-12 rounded-md bg-sky-800 px-2 text-sm text-white md:text-base "
         >
@@ -435,7 +433,7 @@ export default function HomeScreen() {
                 leaveTo="opacity-0 scale-95"
               >
                 <Dialog.Panel className="w-full max-w-xl transform overflow-hidden rounded-md bg-white p-6 text-left align-middle shadow-xl transition-all">
-                  <form className="" onSubmit={submitCreateTodo}>
+                  <form className="">
                     <Dialog.Title as="h3" className=" leading-6 text-gray-900">
                       <input
                         type="text"
@@ -559,7 +557,7 @@ export default function HomeScreen() {
                 leaveTo="opacity-0 scale-95"
               >
                 <Dialog.Panel className="w-full max-w-xl transform overflow-hidden rounded-md bg-white p-6 text-left align-middle shadow-xl transition-all">
-                  <form className="" onSubmit={submitEditTodo}>
+                  <form className="" >
                     <Dialog.Title as="h3" className=" leading-6 text-gray-900">
                       <input
                         className="w-full text-xl font-normal focus:outline-none"

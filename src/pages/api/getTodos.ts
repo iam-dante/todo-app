@@ -2,7 +2,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
 
-
 const prisma = new PrismaClient();
 
 // type Data = {
@@ -15,11 +14,11 @@ export default async function handler(
 ) {
   if (req.method === "GET") {
     const { email } = req.query;
-    
 
+    // console.log(typeof(email))
     const User = await prisma.user.findUnique({
       where: {
-        email: email,
+        email: String(email),
       },
     });
 
@@ -38,16 +37,12 @@ export default async function handler(
 
       // return res.status(200).json({ data: Todolist });
 
-
       const user = await prisma.user.create({
         data: {
-          email: email,
+          email: String(email),
         },
       });
-
     } else {
-    
-
       const Todolist = await prisma.todoList.findMany({
         where: {
           userId: {
@@ -64,8 +59,6 @@ export default async function handler(
       });
 
       return res.status(200).json({ data: Todolist.reverse() });
-
-      
     }
   } else {
     console.log("Something");

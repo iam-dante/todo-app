@@ -4,6 +4,7 @@ import { FirebaseAuth } from "../utils/FirebaseService";
 
 import HomeScreen from "../Screens/HomeScreen";
 import LoginScreen from "../Screens/LoginScreen";
+import { Toaster } from "react-hot-toast";
 
 
 export default function App() {
@@ -18,7 +19,7 @@ export default function App() {
   }
 
   if (error) {
-    return <h1>Error: {error}</h1>;
+    return <Toaster />;
   }
 
   if (!user) {
