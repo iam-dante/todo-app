@@ -1,7 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
-import axios from "axios";
+
 
 const prisma = new PrismaClient();
 
@@ -38,7 +38,6 @@ export default async function handler(
 
       // return res.status(200).json({ data: Todolist });
 
-      console.log("Something to happen");
 
       const user = await prisma.user.create({
         data: {
@@ -46,7 +45,6 @@ export default async function handler(
         },
       });
 
-      console.log(user);
     } else {
     
 
@@ -65,7 +63,7 @@ export default async function handler(
         },
       });
 
-      return res.status(200).json({ data: Todolist });
+      return res.status(200).json({ data: Todolist.reverse() });
 
       
     }

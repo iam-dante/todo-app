@@ -1,18 +1,17 @@
 import { signInWithPopup } from "firebase/auth";
-import { useAuthState } from "react-firebase-hooks/auth";
 import { useAsyncFn } from "react-use";
 
 import { FirebaseAuth, GoogleProvider } from "../utils/FirebaseService";
+
 async function googleSignIn() {
   return signInWithPopup(FirebaseAuth, GoogleProvider);
 }
 
-export default function LoginScreen() {
-  const [state, signIn] = useAsyncFn(googleSignIn);
+export default function LoginScreen():JSX.Element {
+  const [state, signIn] = useAsyncFn(googleSignIn)
 
   return (
     <>
-      {state.error && <div>{state.error.message}</div>}
       <div className="flex h-screen flex-col items-center justify-center space-y-12">
         <h1 className="text-3xl font-bold">Todo App</h1>
         <div className="flex h-24 flex-col justify-center space-y-4 bg-white md:w-1/4">

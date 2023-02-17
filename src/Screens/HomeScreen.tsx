@@ -1,3 +1,4 @@
+
 import axios from "axios";
 import { useState, Fragment, useEffect, use } from "react";
 import { Dialog, Transition } from "@headlessui/react";
@@ -6,11 +7,11 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { FirebaseAuth } from "../utils/FirebaseService";
 import { signOut } from "firebase/auth";
 
-import Image from "next/image";
+// import nodemailer from "Nodemailer";
+import { MailtrapClient } from "mailtrap"
 
-export default function HomeScreen(props) {
+export default function HomeScreen() {
   const [user] = useAuthState(FirebaseAuth);
-
   const [shareData, setshareData] = useState({
     email: "",
     todoId: "",
@@ -33,7 +34,7 @@ export default function HomeScreen(props) {
     listItems: [{ id: undefined, name: "", complete: false }],
   });
 
-  //Listener fields
+  
   const handleFormChange = (index: number, event) => {
     let data = [...inputFields.listItems];
     data[index][event.target.name] = event.target.value;
@@ -71,7 +72,6 @@ export default function HomeScreen(props) {
       listItems: [...pv.listItems, ...data],
     }));
 
-    console.log(editInput);
   };
 
   const removeEditFields = (index: any) => {
@@ -221,30 +221,53 @@ export default function HomeScreen(props) {
     var data = fetchData();
 
     data.then((rs) => {
-      console.log(rs);
       setData(rs);
     });
   }, [user]);
 
-  function TodoItemComponent(props) {
-    const [complete, setComplete] = useState(props.complete);
-
-    function handleChange() {
-      return setComplete(!complete);
-    }
+  function TodoItemComponent(props:{name:String, id:String, complete:boolean}) {
 
     return (
       <div key={props.id} className="flex items-center space-x-3">
         <input
           type="checkbox"
-          onChange={handleChange}
           disabled={true}
-          checked={complete}
+          checked={props.complete}
         />
-        <h1 className={complete ? "line-through" : ""}>{props.name}</h1>
+        <h1 className={props.complete ? "line-through" : ""}>{props.name}</h1>
       </div>
     );
   }
+
+
+  const sendEmail = async () => {
+    const TOKEN = "f4f762b28987ec3f8227e5fd9587728b";
+    const ENDPOINT = "https://send.api.mailtrap.io/";
+
+    const client = new MailtrapClient({ endpoint: ENDPOINT, token: TOKEN });
+
+    const sender = {
+      email: "mailtrap@iam-brian.dev",
+      name: "Mailtrap Test",
+    };
+    const recipients = [
+      {
+        email: "bryangasper2124@gmail.com",
+      },
+    ];
+
+    client
+      .send({
+        from: sender,
+        to: recipients,
+        subject: "You are awesome!",
+        text: "Congrats for sending test email with Mailtrap!",
+        category: "Integration Test",
+      })
+      .then(console.log, console.error);
+
+      console.log("Done Sending the Email")
+  };
 
   return (
     <div className="h-screen bg-white">
@@ -274,7 +297,8 @@ export default function HomeScreen(props) {
         <button
           type="button"
           onClick={() => {
-            openModal();
+            // openModal();
+            sendEmail();
           }}
           className="h-12 rounded-md bg-sky-800 px-2 text-sm text-white md:text-base "
         >
@@ -284,7 +308,7 @@ export default function HomeScreen(props) {
 
       <div className="flex  flex-col items-center space-y-4 px-4 py-6">
         {data?.map((value) => {
-          console.log(value);
+         
           return (
             <div
               key={value.id}
