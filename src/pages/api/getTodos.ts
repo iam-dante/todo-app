@@ -23,19 +23,7 @@ export default async function handler(
     });
 
     if (!User) {
-      // Read User Todolist
-      // const Todolist = await prisma.todoList.findMany({
-      //   where: {
-      //     userId: User?.id,
-      //   },
-      //   select: {
-      //     id:true,
-      //     name: true,
-      //     todoItems: true,
-      //   },
-      // });
 
-      // return res.status(200).json({ data: Todolist });
 
       const user = await prisma.user.create({
         data: {

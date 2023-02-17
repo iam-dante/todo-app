@@ -6,7 +6,7 @@ import { GoogleAuthProvider, getAuth } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDkD_5v5QXKopsm9u2XSba2fwuqWYwb2sI",
-  authDomain: "todo-app-e9b73.firebaseapp.com",
+  authDomain: "todoapp.iam-brian.dev",
   projectId: "todo-app-e9b73",
   storageBucket: "todo-app-e9b73.appspot.com",
   messagingSenderId: "691195604472",
