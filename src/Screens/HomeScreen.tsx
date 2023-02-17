@@ -1,6 +1,5 @@
-
 import axios from "axios";
-import { useState, Fragment, useEffect, use } from "react";
+import { useState, Fragment, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { useAuthState } from "react-firebase-hooks/auth";
 
@@ -8,10 +7,9 @@ import { FirebaseAuth } from "../utils/FirebaseService";
 import { signOut } from "firebase/auth";
 
 // import nodemailer from "Nodemailer";
-import { MailtrapClient } from "mailtrap"
+import { MailtrapClient } from "mailtrap";
 
-export default function HomeScreen():JSX.Element {
-
+export default function HomeScreen(): JSX.Element {
   const [data, setData] = useState([]);
   const [user] = useAuthState(FirebaseAuth);
 
@@ -23,7 +21,7 @@ export default function HomeScreen():JSX.Element {
     email: "",
     todoId: "",
   });
-  
+
   const [inputFields, setInputFields] = useState({
     listname: "",
     listItems: [{ id: undefined, name: "", complete: false }],
@@ -34,9 +32,9 @@ export default function HomeScreen():JSX.Element {
     listname: "",
     listItems: [{ id: undefined, name: "", complete: false }],
   });
-  
-  const handleFormChange = (index: number, event:any) => {
-    let data:any = [...inputFields.listItems];
+
+  const handleFormChange = (index: number, event: any) => {
+    let data: any = [...inputFields.listItems];
     data[index][event.target.name] = event.target.value;
     setEditInput((pv) => ({
       ...pv,
@@ -44,8 +42,8 @@ export default function HomeScreen():JSX.Element {
     }));
   };
 
-  const handleFormChange_ = (index: number, event:any) => {
-    let data:any = [...inputFields.listItems];
+  const handleFormChange_ = (index: number, event: any) => {
+    let data: any = [...inputFields.listItems];
     data[index][event.target.name] = event.target.checked;
     setInputFields((pv) => ({
       ...pv,
@@ -53,8 +51,8 @@ export default function HomeScreen():JSX.Element {
     }));
   };
 
-  const handleEditChange = (index: number, event:any) => {
-    let data:any = [...editInput.listItems];
+  const handleEditChange = (index: number, event: any) => {
+    let data: any = [...editInput.listItems];
     data[index][event.target.name] = event.target.value;
     setInputFields((pv) => ({
       ...pv,
@@ -62,14 +60,13 @@ export default function HomeScreen():JSX.Element {
     }));
   };
 
-  const handelCheck = (index: number, event:any) => {
-    let data:any = [...editInput.listItems];
+  const handelCheck = (index: number, event: any) => {
+    let data: any = [...editInput.listItems];
     data[index][event.target.name] = event.target.checked;
     setInputFields((pv) => ({
       ...pv,
       listItems: [...pv.listItems, ...data],
     }));
-
   };
 
   const removeEditFields = (index: any) => {
@@ -122,7 +119,7 @@ export default function HomeScreen():JSX.Element {
     setIsOpen(false);
     setInputFields({
       listname: "",
-      listItems: [{id:undefined, name: "", complete: false }],
+      listItems: [{ id: undefined, name: "", complete: false }],
     });
 
     location.reload();
@@ -223,20 +220,14 @@ export default function HomeScreen():JSX.Element {
     });
   }, [user]);
 
-  function TodoItemComponent(props:{name:String,  complete:boolean}) {
-
+  function TodoItemComponent(props: { name: String; complete: boolean }) {
     return (
-      <div  className="flex items-center space-x-3">
-        <input
-          type="checkbox"
-          disabled={true}
-          checked={props.complete}
-        />
+      <div className="flex items-center space-x-3">
+        <input type="checkbox" disabled={true} checked={props.complete} />
         <h1 className={props.complete ? "line-through" : ""}>{props.name}</h1>
       </div>
     );
   }
-
 
   const sendEmail = async () => {
     const TOKEN = "f4f762b28987ec3f8227e5fd9587728b";
@@ -250,7 +241,7 @@ export default function HomeScreen():JSX.Element {
     };
     const recipients = [
       {
-        email: "bryangasper2124@gmail.com",
+        email: shareData.email,
       },
     ];
 
@@ -264,7 +255,7 @@ export default function HomeScreen():JSX.Element {
       })
       .then(console.log, console.error);
 
-      console.log("Done Sending the Email")
+    console.log("Done Sending the Email");
   };
 
   return (
@@ -281,7 +272,7 @@ export default function HomeScreen():JSX.Element {
               Log Out
             </button>
           </div>
-          <img alt="" className="h-14 w-14 rounded-full" src={user?.photoURL}/>
+          <img alt="" className="h-14 w-14 rounded-full" src={user?.photoURL} />
         </div>
       </div>
 
@@ -306,7 +297,6 @@ export default function HomeScreen():JSX.Element {
 
       <div className="flex  flex-col items-center space-y-4 px-4 py-6">
         {data?.map((value) => {
-         
           return (
             <div
               key={value.id}
@@ -557,7 +547,7 @@ export default function HomeScreen():JSX.Element {
                 leaveTo="opacity-0 scale-95"
               >
                 <Dialog.Panel className="w-full max-w-xl transform overflow-hidden rounded-md bg-white p-6 text-left align-middle shadow-xl transition-all">
-                  <form className="" >
+                  <form className="">
                     <Dialog.Title as="h3" className=" leading-6 text-gray-900">
                       <input
                         className="w-full text-xl font-normal focus:outline-none"
@@ -761,7 +751,10 @@ export default function HomeScreen():JSX.Element {
                       <button
                         type="button"
                         className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                        onClick={submitShareTodo}
+                        onClick={() => {
+                          submitShareTodo;
+                          sendEmail
+                        }}
                       >
                         Share
                       </button>
