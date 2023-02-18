@@ -7,7 +7,9 @@ import { FirebaseAuth } from "../utils/FirebaseService";
 import { signOut } from "firebase/auth";
 
 // import nodemailer from "Nodemailer";
-import { MailtrapClient } from "mailtrap";
+// import { MailtrapClient } from "mailtrap";
+
+import emailjs from "@emailjs/browser";
 
 export default function HomeScreen(): JSX.Element {
   const [data, setData] = useState([]);
@@ -230,32 +232,32 @@ export default function HomeScreen(): JSX.Element {
   }
 
   const sendEmail = async () => {
-    const TOKEN = "f4f762b28987ec3f8227e5fd9587728b";
-    const ENDPOINT = "https://send.api.mailtrap.io/";
 
-    const client = new MailtrapClient({ endpoint: ENDPOINT, token: TOKEN });
-
-    const sender = {
-      email: "mailtrap@iam-brian.dev",
-      name: "Mailtrap Test",
+    var templateParams = {
+      to_email: shareData.email,
+      from_name: user.displayName,
+      from_email: "todoapp.com",
+      message: `You have been invited by ${user.email} to this todolist`,
     };
-    const recipients = [
-      {
-        email: shareData.email,
-      },
-    ];
 
-    client
-      .send({
-        from: sender,
-        to: recipients,
-        subject: "You are awesome!",
-        text: "Congrats for sending test email with Mailtrap!",
-        category: "Integration Test",
-      })
-      .then(console.log, console.error);
+   await emailjs
+     .send(
+      //  env(SERVICE_ID),
+      "service_xqxfnhl",
+       "template_2c51j9a",
+       templateParams,
+       "iCUk0Jm1zouLKqV-8"
+     )
+     .then(
+       function (response) {
+         console.log("SUCCESS!", response.status, response.text);
+       },
+       function (error) {
+         console.log("FAILED...", error);
+       }
+     );
 
-    console.log("Done Sending the Email");
+     closeModalShare()
   };
 
   return (
@@ -752,8 +754,8 @@ export default function HomeScreen(): JSX.Element {
                         type="button"
                         className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                         onClick={() => {
-                          submitShareTodo;
-                          sendEmail
+                          // submitShareTodo;
+                          sendEmail()
                         }}
                       >
                         Share
@@ -769,3 +771,5 @@ export default function HomeScreen(): JSX.Element {
     </div>
   );
 }
+
+// service_xqxfnhl;

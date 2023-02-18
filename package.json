@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emailjs/browser": "^3.10.0",
     "@headlessui/react": "^1.7.10",
     "@next/font": "13.1.6",
     "@prisma/client": "^4.10.1",
