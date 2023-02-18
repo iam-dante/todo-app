@@ -15,11 +15,6 @@ export default async function handler(
   if (req.method === "POST") {
     const data = req.body;
 
-    const User = await prisma.user.findFirst({
-      where: {
-        email: "test@test.co.tz",
-      },
-    });
 
     const updateTodo = await prisma.todoList.update({
       where: { id: data.todoListId },
