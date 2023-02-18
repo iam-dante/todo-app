@@ -4,14 +4,14 @@ import { FirebaseAuth } from "../utils/FirebaseService";
 
 import HomeScreen from "../Screens/HomeScreen";
 import LoginScreen from "../Screens/LoginScreen";
-import { Toaster } from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 
 import { Audio } from "react-loader-spinner";
-
 
 export default function App() {
   const [user, loading, error] = useAuthState(FirebaseAuth);
 
+  toast.error("Something went wrong");
   if (loading) {
     return (
       <div className="flex h-screen items-center justify-center">
@@ -26,13 +26,14 @@ export default function App() {
   }
 
   if (error) {
-    // return <Toaster />;
-    console.log("something went wrong")
+    return (
+     <Toaster/>
+    );
   }
 
   if (!user) {
     return <LoginScreen />;
   }
-
+  
   return <HomeScreen />;
 }

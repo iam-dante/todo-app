@@ -4,33 +4,21 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-// type Data = {
-//   name: string;
-// };
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   if (req.method === "POST") {
-    // const { email } = req.query;
-
     const data = req.body;
-    // console.log("User Email", email)
-
-    console.log(data.email);
-    console.log(data.todoId);
-
+   
     const User = await prisma.user.findUnique({
       where: {
         email: data.email.trim(),
       },
     });
 
-    // console.log(User);
-
     if (!User) {
-      //   console.log("Something to happen");
+      
       const user = await prisma.user.create({
         data: {
           email: data.email,
@@ -76,6 +64,6 @@ export default async function handler(
       return res.status(200).json({ data: shareTodo });
     }
   } else {
-    console.log("Something");
+    console.log("Something went wrong");
   }
 }

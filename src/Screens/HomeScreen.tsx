@@ -2,11 +2,10 @@ import axios from "axios";
 import { useState, Fragment, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { useAuthState } from "react-firebase-hooks/auth";
-
-import { FirebaseAuth } from "../utils/FirebaseService";
+import { FallingLines } from "react-loader-spinner";
 import { signOut } from "firebase/auth";
 
-import { FallingLines } from "react-loader-spinner";
+import { FirebaseAuth } from "../utils/FirebaseService";
 
 export default function HomeScreen(): JSX.Element {
   const [loading, seL] = useState(false);
@@ -21,9 +20,6 @@ export default function HomeScreen(): JSX.Element {
     email: "",
     todoId: "",
   });
-
- 
-
 
   const [inputFields, setInputFields] = useState({
     listname: "",
@@ -72,6 +68,7 @@ export default function HomeScreen(): JSX.Element {
     }));
   };
 
+  // remove field on edit
   const removeEditFields = (index: any) => {
     let data = [...editInput.listItems];
     data.splice(index, 1);
@@ -81,6 +78,7 @@ export default function HomeScreen(): JSX.Element {
     }));
   };
 
+  // Add edit field
   const addEditFields = () => {
     let newfield = { id: undefined, name: "", complete: false };
     setEditInput((pv) => ({
@@ -109,8 +107,8 @@ export default function HomeScreen(): JSX.Element {
     }));
   };
 
+  // Create a todo
   const submitCreateTodo = async () => {
-    setIsOpen(false);
     const res = await axios({
       method: "POST",
       url: "/api/createTodo",
@@ -120,16 +118,15 @@ export default function HomeScreen(): JSX.Element {
         todoListItems: [...inputFields.listItems],
       },
     });
+    setIsOpen(false);
     setInputFields({
       listname: "",
       listItems: [{ id: undefined, name: "", complete: false }],
     });
-
     location.reload();
   };
 
   const submitEditTodo = async (listId: String) => {
-    closeModalEdit();
     const res = await axios({
       method: "POST",
       url: "/api/updateTodo",
@@ -139,6 +136,7 @@ export default function HomeScreen(): JSX.Element {
         todoListItems: [...editInput.listItems],
       },
     });
+    closeModalEdit();
     setEditInput({
       listid: "",
       listname: "",
@@ -149,7 +147,6 @@ export default function HomeScreen(): JSX.Element {
   };
 
   const submitShareTodo = async () => {
-    closeModalShare();
     const res = await axios({
       method: "POST",
       url: "/api/shareTodo",
@@ -158,6 +155,7 @@ export default function HomeScreen(): JSX.Element {
         todoId: shareData.todoId,
       },
     });
+    closeModalShare();
     setshareData({
       email: "",
       todoId: "",
@@ -165,6 +163,7 @@ export default function HomeScreen(): JSX.Element {
     location.reload();
   };
 
+  // Delete a todoItem
   const deleteTodoItem = async (id: String) => {
     const res = await axios({
       method: "POST",
@@ -189,7 +188,6 @@ export default function HomeScreen(): JSX.Element {
 
   function closeModalEdit() {
     setIsOpenEdit(false);
-    location.reload();
   }
 
   function openModalEdit() {
@@ -227,29 +225,28 @@ export default function HomeScreen(): JSX.Element {
       },
     });
 
-    console.log(res);
     closeModalShare();
   };
 
-   useEffect(() => {
-     async function fetchData() {
-       const todos = await axios.get("api/getTodos", {
-         params: { email: user?.email },
-       });
+  useEffect(() => {
+    async function fetchData() {
+      const todos = await axios.get("api/getTodos", {
+        params: { email: user?.email },
+      });
 
-       return todos.data.data;
-     }
-     seL(true);
-     var data = fetchData();
+      return todos.data.data;
+    }
+    seL(true);
+    var data = fetchData();
 
-     data
-       .then((rs) => {
-         setData(rs);
-       })
-       .finally(() => {
-         seL(false);
-       });
-   }, [user]);
+    data
+      .then((rs) => {
+        setData(rs);
+      })
+      .finally(() => {
+        seL(false);
+      });
+  }, [user]);
 
   return (
     <div className="h-screen bg-white">
@@ -260,7 +257,7 @@ export default function HomeScreen(): JSX.Element {
             <h1 className="">{user?.displayName}</h1>
             <button
               onClick={() => logOut()}
-              className="rounded-full bg-red-200 px-4 text-red-800"
+              className="rounded-full bg-red-200 px-4 text-red-800 hover:bg-red-800 hover:text-white"
             >
               Log Out
             </button>
@@ -269,19 +266,17 @@ export default function HomeScreen(): JSX.Element {
         </div>
       </div>
 
-      <div className="flex items-center justify-center space-x-4 py-4 px-2">
+      <div className="flex items-center justify-center space-x-2 py-4 px-2">
         <input
           className="h-12 w-full  rounded-md border border-gray-500 bg-transparent px-2 focus:outline-none  focus:ring-gray-200 md:w-1/2 "
           placeholder="Search"
-          // value={todo}
-          // onChange={(e) => setTodo(e.target.value)}
         />
         <button
           type="button"
           onClick={() => {
             openModal();
           }}
-          className="h-12 rounded-md bg-sky-800 px-2 text-sm text-white md:text-base "
+          className="h-12 rounded-md bg-sky-800 px-2 text-sm text-white md:text-base hover:bg-white hover:text-sky-800 hover:border hover:border-sky-800 "
         >
           <div className="md:hidden">
             <svg
@@ -299,19 +294,14 @@ export default function HomeScreen(): JSX.Element {
               />
             </svg>
           </div>
-          <h1 className="hidden md:block">Create a todo</h1>
+          <h1 className="hidden md:block ">Create a todo</h1>
         </button>
       </div>
 
       <div className=" flex h-96  flex-col items-center space-y-4 px-4 py-6">
         {loading ? (
           <div className="flex h-full items-center justify-center">
-            <FallingLines
-              color="#1d4ed8"
-              width="100"
-              visible={true}
-             
-            />
+            <FallingLines color="#1d4ed8" width="100" visible={true} />
           </div>
         ) : (
           ""
@@ -468,7 +458,6 @@ export default function HomeScreen(): JSX.Element {
                           >
                             <input
                               type="checkbox"
-                              // checked={inputFields.listItems[index].complete}
                               checked={value.complete}
                               name="complete"
                               onChange={(event) => {
@@ -592,12 +581,8 @@ export default function HomeScreen(): JSX.Element {
                             <div className="flex w-full items-center space-x-3">
                               <input
                                 type="checkbox"
-                                // disabled={vl.complete}
                                 checked={value.complete}
-                                // value='off'
                                 name="complete"
-                                // can-true-value={true}
-                                // can-false-value={false}
                                 onChange={(event) => handelCheck(index, event)}
                               />
                               <input
@@ -735,5 +720,3 @@ export default function HomeScreen(): JSX.Element {
     </div>
   );
 }
-
-// service_xqxfnhl;

@@ -26,6 +26,6 @@ export default async function handler(
       return res.status(200).json({ name: "Successful" });
     }
   } else {
-    console.log("Something");
+    console.log("Something went wrong");
   }
 }

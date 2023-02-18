@@ -4,10 +4,6 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-// type Data = {
-//   name: string;
-// };
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -15,7 +11,6 @@ export default async function handler(
   if (req.method === "GET") {
     const { email } = req.query;
 
-    // console.log(typeof(email))
     const User = await prisma.user.findUnique({
       where: {
         email: String(email),
@@ -24,20 +19,19 @@ export default async function handler(
 
     if (!User) {
 
-
       const user = await prisma.user.create({
         data: {
           email: String(email),
         },
       });
     } else {
+
       const Todolist = await prisma.todoList.findMany({
         where: {
           userId: {
             has: User?.id,
           },
         },
-
         select: {
           todoItems: true,
           name: true,
@@ -49,6 +43,6 @@ export default async function handler(
       return res.status(200).json({ data: Todolist.reverse() });
     }
   } else {
-    console.log("Something");
+    console.log("Something went wrong");
   }
 }

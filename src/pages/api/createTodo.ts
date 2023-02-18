@@ -2,7 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
 
-import UserProfile from "@/utils/userProfile";
+
 const prisma = new PrismaClient();
 
 type Data = {
@@ -15,7 +15,7 @@ export default async function handler(
 ) {
   if (req.method === "POST") {
     const data = req.body;
-    console.log(data)
+
     
     const User = await prisma.user.findFirst({
       where: {
@@ -38,6 +38,6 @@ export default async function handler(
 
     return res.status(200).json({ name: "Successful" });
   } else {
-    console.log("Something");
+    console.log("Something wrong request");
   }
 }
