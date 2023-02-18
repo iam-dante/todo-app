@@ -6,14 +6,21 @@ import HomeScreen from "../Screens/HomeScreen";
 import LoginScreen from "../Screens/LoginScreen";
 import { Toaster } from "react-hot-toast";
 
+import { Audio } from "react-loader-spinner";
+
 
 export default function App() {
   const [user, loading, error] = useAuthState(FirebaseAuth);
 
   if (loading) {
     return (
-      <div>
-        <p>Initialising User...</p>
+      <div className="flex h-screen items-center justify-center">
+        <Audio
+          height="80"
+          width="80"
+          color="#1d4ed8"
+          ariaLabel="three-dots-loading"
+        />
       </div>
     );
   }
@@ -29,10 +36,3 @@ export default function App() {
 
   return <HomeScreen />;
 }
-
-// function getBaseUrl() {
-//   if (process.env.NODE_ENV === "development") {
-//     return `http://localhost:${process.env.PORT ?? 3000}`;
-//   }
-//   return process.env.VERCEL_URL;
-// }

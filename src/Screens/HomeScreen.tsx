@@ -6,6 +6,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { FirebaseAuth } from "../utils/FirebaseService";
 import { signOut } from "firebase/auth";
 
+import {FallingLines } from "react-loader-spinner";
 
 export default function HomeScreen(): JSX.Element {
   const [data, setData] = useState([]);
@@ -105,6 +106,7 @@ export default function HomeScreen(): JSX.Element {
   };
 
   const submitCreateTodo = async () => {
+    setIsOpen(false);
     const res = await axios({
       method: "POST",
       url: "/api/createTodo",
@@ -114,7 +116,6 @@ export default function HomeScreen(): JSX.Element {
         todoListItems: [...inputFields.listItems],
       },
     });
-    setIsOpen(false);
     setInputFields({
       listname: "",
       listItems: [{ id: undefined, name: "", complete: false }],
@@ -124,6 +125,7 @@ export default function HomeScreen(): JSX.Element {
   };
 
   const submitEditTodo = async (listId: String) => {
+    closeModalEdit();
     const res = await axios({
       method: "POST",
       url: "/api/updateTodo",
@@ -133,7 +135,6 @@ export default function HomeScreen(): JSX.Element {
         todoListItems: [...editInput.listItems],
       },
     });
-    closeModalEdit();
     setEditInput({
       listid: "",
       listname: "",
@@ -144,6 +145,7 @@ export default function HomeScreen(): JSX.Element {
   };
 
   const submitShareTodo = async () => {
+    closeModalShare();
     const res = await axios({
       method: "POST",
       url: "/api/shareTodo",
@@ -152,7 +154,6 @@ export default function HomeScreen(): JSX.Element {
         todoId: shareData.todoId,
       },
     });
-    closeModalShare();
     setshareData({
       email: "",
       todoId: "",
@@ -203,6 +204,8 @@ export default function HomeScreen(): JSX.Element {
     signOut(FirebaseAuth);
   }
 
+  const [loading, seL] = useState(false);
+
   useEffect(() => {
     async function fetchData() {
       const todos = await axios.get("api/getTodos", {
@@ -211,11 +214,16 @@ export default function HomeScreen(): JSX.Element {
 
       return todos.data.data;
     }
+    seL(true);
     var data = fetchData();
 
-    data.then((rs) => {
-      setData(rs);
-    });
+    data
+      .then((rs) => {
+        setData(rs);
+      })
+      .finally(() => {
+        seL(false);
+      });
   }, [user]);
 
   function TodoItemComponent(props: { name: String; complete: boolean }) {
@@ -228,19 +236,16 @@ export default function HomeScreen(): JSX.Element {
   }
 
   const sendEmail = async () => {
-
     const res = await axios({
       method: "POST",
       url: "/api/sendEmail",
       data: {
-        user:user.displayName,
+        user: user.displayName,
         email: shareData.email,
-
       },
-
     });
 
-    console.log(res)
+    console.log(res);
     closeModalShare();
   };
 
@@ -262,13 +267,12 @@ export default function HomeScreen(): JSX.Element {
         </div>
       </div>
 
-      <div className="flex  items-center justify-center space-x-4 py-4 px-2">
+      <div className="flex items-center justify-center space-x-4 py-4 px-2">
         <input
           className="h-12 w-full  rounded-md border border-gray-500 bg-transparent px-2 focus:outline-none  focus:ring-gray-200 md:w-1/2 "
           placeholder="Search"
           // value={todo}
           // onChange={(e) => setTodo(e.target.value)}
-
         />
         <button
           type="button"
@@ -277,11 +281,39 @@ export default function HomeScreen(): JSX.Element {
           }}
           className="h-12 rounded-md bg-sky-800 px-2 text-sm text-white md:text-base "
         >
-          Create a todo
+          <div className="md:hidden">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              className="h-6 w-6"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </div>
+          <h1 className="hidden md:block">Create a todo</h1>
         </button>
       </div>
 
-      <div className="flex  flex-col items-center space-y-4 px-4 py-6">
+      <div className=" flex h-96  flex-col items-center space-y-4 px-4 py-6">
+        {loading ? (
+          <div className="flex h-full items-center justify-center">
+            <FallingLines
+              color="#1d4ed8"
+              width="100"
+              visible={true}
+              ariaLabel="falling-lines-loading"
+            />
+          </div>
+        ) : (
+          ""
+        )}
         {data?.map((value) => {
           return (
             <div
@@ -679,14 +711,12 @@ export default function HomeScreen(): JSX.Element {
                       />
                     </Dialog.Title>
 
-                    
-
                     <div className="mt-4 flex justify-end">
                       <button
                         type="button"
                         className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                         onClick={() => {
-                          submitShareTodo()
+                          submitShareTodo();
                           sendEmail();
                         }}
                       >
