@@ -51,7 +51,7 @@ yarn dev
 
 or 
 
-npm dev
+npm run  dev
 
 ```
 
