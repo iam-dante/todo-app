@@ -249,7 +249,7 @@ export default function HomeScreen(): JSX.Element {
   }, [user]);
 
   return (
-    <div className="h-screen bg-white">
+    <div className="h-screen bg-white pb-24">
       <div className="flex  w-full items-center justify-between p-4">
         <h1 className="text-xl font-semibold uppercase">Todo App</h1>
         <div className="flex items-center  space-x-4 ">
@@ -276,7 +276,7 @@ export default function HomeScreen(): JSX.Element {
           onClick={() => {
             openModal();
           }}
-          className="h-12 rounded-md bg-sky-800 px-2 text-sm text-white md:text-base hover:bg-white hover:text-sky-800 hover:border hover:border-sky-800 "
+          className="h-12 rounded-md bg-sky-800 px-2 text-sm text-white hover:border hover:border-sky-800 hover:bg-white hover:text-sky-800 md:text-base "
         >
           <div className="md:hidden">
             <svg
@@ -298,7 +298,7 @@ export default function HomeScreen(): JSX.Element {
         </button>
       </div>
 
-      <div className=" flex h-96  flex-col items-center space-y-4 px-4 py-6">
+      <div className=" flex  w-full flex-col items-center space-y-4 px-4 pb-12 ">
         {loading ? (
           <div className="flex h-full items-center justify-center">
             <FallingLines color="#1d4ed8" width="100" visible={true} />
@@ -306,104 +306,107 @@ export default function HomeScreen(): JSX.Element {
         ) : (
           ""
         )}
-        {data?.map((value) => {
-          return (
-            <div
-              key={value.id}
-              className="w-full rounded-md border border-gray-600 px-4  pt-6 hover:shadow-xl   md:w-1/2"
-            >
-              <div className="flex w-full items-center justify-between space-x-2">
-                <h1>{value.name}</h1>
 
-                <div className="flex space-x-2">
-                  {value.User.length > 1
-                    ? value.User.map((vl, ix) => {
-                        return (
-                          <div
-                            key={ix}
-                            className="flex h-8 w-8 items-center justify-center rounded-full bg-sky-200 uppercase"
-                          >
-                            <h1 className="text-sky-900">
-                              {vl.email[0].toUpperCase()}
-                            </h1>
-                          </div>
-                        );
-                      })
-                    : ""}
+       
+          {data?.map((value) => {
+            return (
+              <div
+                key={value.id}
+                className="w-full rounded-md border border-gray-600 px-4  pt-6 hover:shadow-xl   md:w-1/2"
+              >
+                <div className="flex w-full items-center justify-between space-x-2">
+                  <h1>{value.name}</h1>
+
+                  <div className="flex space-x-2">
+                    {value.User.length > 1
+                      ? value.User.map((vl, ix) => {
+                          return (
+                            <div
+                              key={ix}
+                              className="flex h-8 w-8 items-center justify-center rounded-full bg-sky-200 uppercase"
+                            >
+                              <h1 className="text-sky-900">
+                                {vl.email[0].toUpperCase()}
+                              </h1>
+                            </div>
+                          );
+                        })
+                      : ""}
+                  </div>
+                </div>
+
+                <div className="mt-6 space-y-4">
+                  {value.todoItems.map((vl, ix) => {
+                    return (
+                      <TodoItemComponent
+                        key={ix}
+                        name={vl.name}
+                        complete={vl.complete}
+                      />
+                    );
+                  })}
+                </div>
+
+                <div className="flex justify-end py-2 ">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      openModalEdit();
+
+                      setEditInput({
+                        listid: value.id,
+                        listname: value.name,
+                        listItems: [...value.todoItems],
+                      });
+                    }}
+                    className="flex items-center rounded-full p-3 hover:bg-sky-100"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth="1.5"
+                      stroke="currentColor"
+                      className="h-6 w-6 text-sky-900"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
+                      />
+                    </svg>
+                  </button>
+
+                  <button
+                    className="flex items-center rounded-full p-3 hover:bg-sky-100"
+                    onClick={() => {
+                      openModalShare();
+                      setshareData((pv) => ({
+                        ...pv,
+                        todoId: value.id,
+                      }));
+                    }}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth="1.5"
+                      stroke="currentColor"
+                      className="h-6 w-6 text-sky-900"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"
+                      />
+                    </svg>
+                  </button>
                 </div>
               </div>
-
-              <div className="mt-6 space-y-4">
-                {value.todoItems.map((vl, ix) => {
-                  return (
-                    <TodoItemComponent
-                      key={ix}
-                      name={vl.name}
-                      complete={vl.complete}
-                    />
-                  );
-                })}
-              </div>
-
-              <div className="flex justify-end py-2 ">
-                <button
-                  type="button"
-                  onClick={() => {
-                    openModalEdit();
-
-                    setEditInput({
-                      listid: value.id,
-                      listname: value.name,
-                      listItems: [...value.todoItems],
-                    });
-                  }}
-                  className="flex items-center rounded-full p-3 hover:bg-sky-100"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth="1.5"
-                    stroke="currentColor"
-                    className="h-6 w-6 text-sky-900"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
-                    />
-                  </svg>
-                </button>
-
-                <button
-                  className="flex items-center rounded-full p-3 hover:bg-sky-100"
-                  onClick={() => {
-                    openModalShare();
-                    setshareData((pv) => ({
-                      ...pv,
-                      todoId: value.id,
-                    }));
-                  }}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth="1.5"
-                    stroke="currentColor"
-                    className="h-6 w-6 text-sky-900"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        
       </div>
 
       {/* Add  a Todo */}
