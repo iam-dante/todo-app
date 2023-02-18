@@ -308,7 +308,7 @@ export default function HomeScreen(): JSX.Element {
               color="#1d4ed8"
               width="100"
               visible={true}
-              ariaLabel="falling-lines-loading"
+             
             />
           </div>
         ) : (
