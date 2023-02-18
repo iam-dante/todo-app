@@ -6,9 +6,6 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { FirebaseAuth } from "../utils/FirebaseService";
 import { signOut } from "firebase/auth";
 
-// import { MailtrapClient } from "mailtrap";
-
-// import emailjs from "@emailjs/browser";
 
 export default function HomeScreen(): JSX.Element {
   const [data, setData] = useState([]);
@@ -231,65 +228,19 @@ export default function HomeScreen(): JSX.Element {
   }
 
   const sendEmail = async () => {
-    //   var templateParams = {
-    //     to_email: shareData.email,
-    //     from_name: user.displayName,
-    //     from_email: "todoapp.com",
-    //     message: `You have been invited by ${user.email} to this todolist`,
-    //   };
-
-    //  await emailjs
-    //    .send(
-    //     //  env(SERVICE_ID),
-    //     "service_xqxfnhl",
-    //      "template_2c51j9a",
-    //      templateParams,
-    //      "iCUk0Jm1zouLKqV-8"
-    //    )
-    //    .then(
-    //      function (response) {
-    //        console.log("SUCCESS!", response.status, response.text);
-    //      },
-    //      function (error) {
-    //        console.log("FAILED...", error);
-    //      }
-    //    );
-
-    // const transporter = nodemailer.createTransport({
-    //   service: "gmail",
-    //   auth: {
-    //     user: "securesally@gmail.com",
-    //     pass: "gilbbewcxodbmkda",
-    //   },
-    // });
-
-    // const mailOptions = {
-    //   from: "hello@example.com",
-    //   to: "bryangasper12@gmail.com",
-    //   subject: "Subject",
-    //   text: "Email content",
-    // };
-
-    // transporter.sendMail(mailOptions, function (error, info) {
-    //   if (error) {
-    //     console.log(error);
-    //   } else {
-    //     console.log("Email sent: " + info.response);
-    //     // do something useful
-    //   }
-    // });
 
     const res = await axios({
       method: "POST",
       url: "/api/sendEmail",
       data: {
+        user:user.displayName,
         email: shareData.email,
-        todoId: shareData.todoId,
+
       },
 
     });
-    console.log(res)
 
+    console.log(res)
     closeModalShare();
   };
 
@@ -317,12 +268,12 @@ export default function HomeScreen(): JSX.Element {
           placeholder="Search"
           // value={todo}
           // onChange={(e) => setTodo(e.target.value)}
+
         />
         <button
           type="button"
           onClick={() => {
             openModal();
-            // sendEmail();
           }}
           className="h-12 rounded-md bg-sky-800 px-2 text-sm text-white md:text-base "
         >
@@ -728,66 +679,14 @@ export default function HomeScreen(): JSX.Element {
                       />
                     </Dialog.Title>
 
-                    {/* <div className="mt-6 space-y-4">
-                      {inputFields.listItems.map((value, index) => {
-                        return (
-                          <div
-                            key={index}
-                            className="flex items-center space-x-3"
-                          >
-                            <input
-                              type="checkbox"
-                              // checked={inputFields.listItems[index].complete}
-                              checked={value.complete}
-                              name="complete"
-                              onChange={(event) => {
-                                handleFormChange_(index, event);
-                              }}
-                            />
-                            <input
-                              type="text"
-                              className={
-                                inputFields.listItems[index].complete
-                                  ? "w-full font-normal line-through  focus:outline-none"
-                                  : "w-full font-normal  focus:outline-none "
-                              }
-                              placeholder="Todo Item"
-                              name="name"
-                              value={value.name}
-                              onChange={(event) =>
-                                handleFormChange(index, event)
-                              }
-                            />
-                            <button
-                              type="button"
-                              onClick={() => removeFields(index)}
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                strokeWidth="1.5"
-                                stroke="currentColor"
-                                className="h-6 w-6 text-red-700"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                />
-                              </svg>
-                            </button>
-                          </div>
-                        );
-                      })}
-                    </div> */}
+                    
 
                     <div className="mt-4 flex justify-end">
                       <button
                         type="button"
                         className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                         onClick={() => {
-                          // submitShareTodo;
+                          submitShareTodo()
                           sendEmail();
                         }}
                       >

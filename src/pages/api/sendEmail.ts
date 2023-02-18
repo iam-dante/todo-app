@@ -32,9 +32,9 @@ export default async function handler(
 
     const mailOptions = {
       from: "hello@example.com",
-      to: "bryangasper12@gmail.com",
-      subject: "Subject",
-      text: "Email content",
+      to: data.email,
+      subject: "Todo App",
+      text: `You have been add to a Todolist by ${data.user} ${data.email} please login in to the TodoApp`,
     };
 
     transporter.sendMail(mailOptions, function (error, info) {
