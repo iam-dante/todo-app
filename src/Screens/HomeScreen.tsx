@@ -6,10 +6,9 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { FirebaseAuth } from "../utils/FirebaseService";
 import { signOut } from "firebase/auth";
 
-// import nodemailer from "Nodemailer";
 // import { MailtrapClient } from "mailtrap";
 
-import emailjs from "@emailjs/browser";
+// import emailjs from "@emailjs/browser";
 
 export default function HomeScreen(): JSX.Element {
   const [data, setData] = useState([]);
@@ -232,32 +231,64 @@ export default function HomeScreen(): JSX.Element {
   }
 
   const sendEmail = async () => {
+    //   var templateParams = {
+    //     to_email: shareData.email,
+    //     from_name: user.displayName,
+    //     from_email: "todoapp.com",
+    //     message: `You have been invited by ${user.email} to this todolist`,
+    //   };
 
-    var templateParams = {
-      to_email: shareData.email,
-      from_name: user.displayName,
-      from_email: "todoapp.com",
-      message: `You have been invited by ${user.email} to this todolist`,
-    };
+    //  await emailjs
+    //    .send(
+    //     //  env(SERVICE_ID),
+    //     "service_xqxfnhl",
+    //      "template_2c51j9a",
+    //      templateParams,
+    //      "iCUk0Jm1zouLKqV-8"
+    //    )
+    //    .then(
+    //      function (response) {
+    //        console.log("SUCCESS!", response.status, response.text);
+    //      },
+    //      function (error) {
+    //        console.log("FAILED...", error);
+    //      }
+    //    );
 
-   await emailjs
-     .send(
-      //  env(SERVICE_ID),
-      "service_xqxfnhl",
-       "template_2c51j9a",
-       templateParams,
-       "iCUk0Jm1zouLKqV-8"
-     )
-     .then(
-       function (response) {
-         console.log("SUCCESS!", response.status, response.text);
-       },
-       function (error) {
-         console.log("FAILED...", error);
-       }
-     );
+    // const transporter = nodemailer.createTransport({
+    //   service: "gmail",
+    //   auth: {
+    //     user: "securesally@gmail.com",
+    //     pass: "gilbbewcxodbmkda",
+    //   },
+    // });
 
-     closeModalShare()
+    // const mailOptions = {
+    //   from: "hello@example.com",
+    //   to: "bryangasper12@gmail.com",
+    //   subject: "Subject",
+    //   text: "Email content",
+    // };
+
+    // transporter.sendMail(mailOptions, function (error, info) {
+    //   if (error) {
+    //     console.log(error);
+    //   } else {
+    //     console.log("Email sent: " + info.response);
+    //     // do something useful
+    //   }
+    // });
+
+    const res = await axios({
+      method: "POST",
+      url: "/api/sendEmail",
+      data: {
+        email: shareData.email,
+        todoId: shareData.todoId,
+      },
+    });
+
+    closeModalShare();
   };
 
   return (
@@ -755,7 +786,7 @@ export default function HomeScreen(): JSX.Element {
                         className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                         onClick={() => {
                           // submitShareTodo;
-                          sendEmail()
+                          sendEmail();
                         }}
                       >
                         Share
