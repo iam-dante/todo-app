@@ -43,10 +43,10 @@ export default async function handler(
       } else {
         console.log("Email sent: " + info.response);
         // do something useful
+        return res.status(200).json({ name:  info.response});
       }
     });
 
-    return res.status(200).json({ name: "Successful" });
   } else {
     console.log("Something");
   }

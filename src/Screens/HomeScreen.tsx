@@ -286,7 +286,9 @@ export default function HomeScreen(): JSX.Element {
         email: shareData.email,
         todoId: shareData.todoId,
       },
+
     });
+    console.log(res)
 
     closeModalShare();
   };
