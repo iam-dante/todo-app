@@ -22,6 +22,7 @@ export default async function handler(
      console.log("sending email notification")
    
     const transporter = nodemailer.createTransport({
+      host: "todoapp.iam-brian.dev/",
       service: "gmail",
       auth: {
         user: "bryangasper2124@gmail.com",
