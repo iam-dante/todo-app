@@ -6,9 +6,10 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { FirebaseAuth } from "../utils/FirebaseService";
 import { signOut } from "firebase/auth";
 
-import {FallingLines } from "react-loader-spinner";
+import { FallingLines } from "react-loader-spinner";
 
 export default function HomeScreen(): JSX.Element {
+  const [loading, seL] = useState(false);
   const [data, setData] = useState([]);
   const [user] = useAuthState(FirebaseAuth);
 
@@ -20,6 +21,27 @@ export default function HomeScreen(): JSX.Element {
     email: "",
     todoId: "",
   });
+
+  useEffect(() => {
+    async function fetchData() {
+      const todos = await axios.get("api/getTodos", {
+        params: { email: user?.email },
+      });
+
+      return todos.data.data;
+    }
+    seL(true);
+    var data = fetchData();
+
+    data
+      .then((rs) => {
+        setData(rs);
+      })
+      .finally(() => {
+        seL(false);
+      });
+  }, [user]);
+
 
   const [inputFields, setInputFields] = useState({
     listname: "",
@@ -203,28 +225,6 @@ export default function HomeScreen(): JSX.Element {
   function logOut() {
     signOut(FirebaseAuth);
   }
-
-  const [loading, seL] = useState(false);
-
-  useEffect(() => {
-    async function fetchData() {
-      const todos = await axios.get("api/getTodos", {
-        params: { email: user?.email },
-      });
-
-      return todos.data.data;
-    }
-    seL(true);
-    var data = fetchData();
-
-    data
-      .then((rs) => {
-        setData(rs);
-      })
-      .finally(() => {
-        seL(false);
-      });
-  }, [user]);
 
   function TodoItemComponent(props: { name: String; complete: boolean }) {
     return (
