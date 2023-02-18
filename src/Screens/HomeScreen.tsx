@@ -22,25 +22,7 @@ export default function HomeScreen(): JSX.Element {
     todoId: "",
   });
 
-  useEffect(() => {
-    async function fetchData() {
-      const todos = await axios.get("api/getTodos", {
-        params: { email: user?.email },
-      });
-
-      return todos.data.data;
-    }
-    seL(true);
-    var data = fetchData();
-
-    data
-      .then((rs) => {
-        setData(rs);
-      })
-      .finally(() => {
-        seL(false);
-      });
-  }, [user]);
+ 
 
 
   const [inputFields, setInputFields] = useState({
@@ -248,6 +230,26 @@ export default function HomeScreen(): JSX.Element {
     console.log(res);
     closeModalShare();
   };
+
+   useEffect(() => {
+     async function fetchData() {
+       const todos = await axios.get("api/getTodos", {
+         params: { email: user?.email },
+       });
+
+       return todos.data.data;
+     }
+     seL(true);
+     var data = fetchData();
+
+     data
+       .then((rs) => {
+         setData(rs);
+       })
+       .finally(() => {
+         seL(false);
+       });
+   }, [user]);
 
   return (
     <div className="h-screen bg-white">
