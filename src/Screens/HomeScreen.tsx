@@ -155,54 +155,52 @@ export default function HomeScreen(): JSX.Element {
   };
 
   const submitShareTodo = async () => {
+    let schema = yup.object().shape({
+      email: yup.string().email(),
+    });
 
-    
+    const isEmail = await schema
+      .isValid({ email: shareData.email })
+      .then((valid) => {
+        return valid;
+      });
 
-     let schema = yup.object().shape({
-       email: yup.string().email(),
-     });
+    console.log(isEmail);
+    console.log(shareData.email);
 
-     const isEmail = await schema
-       .isValid({ email: shareData.email })
-       .then((valid) => {
-         return valid;
-       });
+    if (isEmail && shareData.email.length > 1) {
+      seLSend(true);
 
-     console.log(isEmail);
-     console.log(shareData.email);
+      const shareTodo = await axios({
+        method: "POST",
+        url: "/api/shareTodo",
+        data: {
+          email: shareData.email,
+          todoId: shareData.todoId,
+        },
+      });
 
-     if (isEmail && shareData.email.length > 1) {
-        const shareTodo = await axios({
-          method: "POST",
-          url: "/api/shareTodo",
-          data: {
-            email: shareData.email,
-            todoId: shareData.todoId,
-          },
-        });
+      const sendEmail = await axios({
+        method: "POST",
+        url: "/api/sendEmail",
+        data: {
+          user: user.displayName,
+          email: shareData.email,
+        },
+      });
+      seLSend(false);
+      toast.success("Notification sent");
 
-       const sendEmail = await axios({
-         method: "POST",
-         url: "/api/sendEmail",
-         data: {
-           user: user.displayName,
-           email: shareData.email,
-         },
-       });
-        closeModalShare();
-        setshareData({
-          email: "",
-          todoId: "",
-        });
-         closeModalShare();
-        location.reload();
-     } else {
-       toast.error("Invalid email") 
-       setshareData({
-         email: "",
-         todoId: "",
-       });
-      }
+      closeModalShare();
+      setshareData({
+        email: "",
+        todoId: "",
+      });
+      closeModalShare();
+      location.reload();
+    } else {
+      toast.error("Invalid email");
+    }
   };
 
   // Delete a todoItem
@@ -259,37 +257,37 @@ export default function HomeScreen(): JSX.Element {
   }
 
   // const sendEmail = async () => {
-    // toast.error("Invalid Email");
+  // toast.error("Invalid Email");
 
-    // let schema = yup.object().shape({
-    //   email: yup.string().email(),
-    // });
+  // let schema = yup.object().shape({
+  //   email: yup.string().email(),
+  // });
 
-    // const isEmail = await schema
-    //   .isValid({ email: shareData.email })
-    //   .then((valid) => {
-    //     return valid;
-    //   });
+  // const isEmail = await schema
+  //   .isValid({ email: shareData.email })
+  //   .then((valid) => {
+  //     return valid;
+  //   });
 
-    // console.log(isEmail);
-    // console.log(shareData.email);
+  // console.log(isEmail);
+  // console.log(shareData.email);
 
-    // if (isEmail && shareData.email.length > 1) {
-    //   const res = await axios({
-    //     method: "POST",
-    //     url: "/api/sendEmail",
-    //     data: {
-    //       user: user.displayName,
-    //       email: shareData.email,
-    //     },
-    //   });
-    // } else {
-    //   // toast.error("Invalid email")
-    //   console.log("invalid email")
-    //   return <Toaster />;
-    // }
+  // if (isEmail && shareData.email.length > 1) {
+  //   const res = await axios({
+  //     method: "POST",
+  //     url: "/api/sendEmail",
+  //     data: {
+  //       user: user.displayName,
+  //       email: shareData.email,
+  //     },
+  //   });
+  // } else {
+  //   // toast.error("Invalid email")
+  //   console.log("invalid email")
+  //   return <Toaster />;
+  // }
 
-    // closeModalShare();
+  // closeModalShare();
   // };
 
   useEffect(() => {
