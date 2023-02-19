@@ -7,8 +7,8 @@ async function googleSignIn() {
   return signInWithPopup(FirebaseAuth, GoogleProvider);
 }
 
-export default function LoginScreen():JSX.Element {
-  const [state, signIn] = useAsyncFn(googleSignIn)
+export default function LoginScreen(): JSX.Element {
+  const [state, signIn] = useAsyncFn(googleSignIn);
 
   return (
     <>

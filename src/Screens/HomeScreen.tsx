@@ -2,13 +2,18 @@ import axios from "axios";
 import { useState, Fragment, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { FallingLines } from "react-loader-spinner";
+import { FallingLines, Oval } from "react-loader-spinner";
 import { signOut } from "firebase/auth";
+import * as yup from "yup";
+import toast, { Toaster } from "react-hot-toast";
 
 import { FirebaseAuth } from "../utils/FirebaseService";
+// import { toast } from "react-hot-toast";
 
 export default function HomeScreen(): JSX.Element {
   const [loading, seL] = useState(false);
+  const [loadingSend, seLSend] = useState(false);
+
   const [data, setData] = useState([]);
   const [user] = useAuthState(FirebaseAuth);
 
@@ -127,6 +132,7 @@ export default function HomeScreen(): JSX.Element {
   };
 
   const submitEditTodo = async (listId: String) => {
+    seLSend(true);
     const res = await axios({
       method: "POST",
       url: "/api/updateTodo",
@@ -143,24 +149,60 @@ export default function HomeScreen(): JSX.Element {
       listItems: [{ id: undefined, name: "", complete: false }],
     });
 
+    seLSend(false);
+
     location.reload();
   };
 
   const submitShareTodo = async () => {
-    const res = await axios({
-      method: "POST",
-      url: "/api/shareTodo",
-      data: {
-        email: shareData.email,
-        todoId: shareData.todoId,
-      },
-    });
-    closeModalShare();
-    setshareData({
-      email: "",
-      todoId: "",
-    });
-    location.reload();
+
+    
+
+     let schema = yup.object().shape({
+       email: yup.string().email(),
+     });
+
+     const isEmail = await schema
+       .isValid({ email: shareData.email })
+       .then((valid) => {
+         return valid;
+       });
+
+     console.log(isEmail);
+     console.log(shareData.email);
+
+     if (isEmail && shareData.email.length > 1) {
+        const shareTodo = await axios({
+          method: "POST",
+          url: "/api/shareTodo",
+          data: {
+            email: shareData.email,
+            todoId: shareData.todoId,
+          },
+        });
+
+       const sendEmail = await axios({
+         method: "POST",
+         url: "/api/sendEmail",
+         data: {
+           user: user.displayName,
+           email: shareData.email,
+         },
+       });
+        closeModalShare();
+        setshareData({
+          email: "",
+          todoId: "",
+        });
+         closeModalShare();
+        location.reload();
+     } else {
+       toast.error("Invalid email") 
+       setshareData({
+         email: "",
+         todoId: "",
+       });
+      }
   };
 
   // Delete a todoItem
@@ -188,6 +230,7 @@ export default function HomeScreen(): JSX.Element {
 
   function closeModalEdit() {
     setIsOpenEdit(false);
+    location.reload();
   }
 
   function openModalEdit() {
@@ -215,18 +258,39 @@ export default function HomeScreen(): JSX.Element {
     );
   }
 
-  const sendEmail = async () => {
-    const res = await axios({
-      method: "POST",
-      url: "/api/sendEmail",
-      data: {
-        user: user.displayName,
-        email: shareData.email,
-      },
-    });
+  // const sendEmail = async () => {
+    // toast.error("Invalid Email");
 
-    closeModalShare();
-  };
+    // let schema = yup.object().shape({
+    //   email: yup.string().email(),
+    // });
+
+    // const isEmail = await schema
+    //   .isValid({ email: shareData.email })
+    //   .then((valid) => {
+    //     return valid;
+    //   });
+
+    // console.log(isEmail);
+    // console.log(shareData.email);
+
+    // if (isEmail && shareData.email.length > 1) {
+    //   const res = await axios({
+    //     method: "POST",
+    //     url: "/api/sendEmail",
+    //     data: {
+    //       user: user.displayName,
+    //       email: shareData.email,
+    //     },
+    //   });
+    // } else {
+    //   // toast.error("Invalid email")
+    //   console.log("invalid email")
+    //   return <Toaster />;
+    // }
+
+    // closeModalShare();
+  // };
 
   useEffect(() => {
     async function fetchData() {
@@ -249,7 +313,23 @@ export default function HomeScreen(): JSX.Element {
   }, [user]);
 
   return (
-    <div className="h-screen bg-white pb-24">
+    <div className="relative h-screen bg-white pb-24">
+      <Toaster />
+      {loadingSend ? (
+        <div className="absolute z-50 flex h-screen w-full items-center justify-center bg-gray-200/50">
+          <Oval
+            height={80}
+            width={80}
+            color="#1d4ed8"
+            visible={true}
+            secondaryColor="#7dd3fc"
+            strokeWidth={3}
+            strokeWidthSecondary={3}
+          />
+        </div>
+      ) : (
+        ""
+      )}
       <div className="flex  w-full items-center justify-between p-4">
         <h1 className="text-xl font-semibold uppercase">Todo App</h1>
         <div className="flex items-center  space-x-4 ">
@@ -283,13 +363,13 @@ export default function HomeScreen(): JSX.Element {
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
-              stroke-width="1.5"
+              strokeWidth="1.5"
               stroke="currentColor"
               className="h-6 w-6"
             >
               <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeLinecap="round"
+                strokeLinejoin="round"
                 d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
@@ -307,106 +387,104 @@ export default function HomeScreen(): JSX.Element {
           ""
         )}
 
-       
-          {data?.map((value) => {
-            return (
-              <div
-                key={value.id}
-                className="w-full rounded-md border border-gray-600 px-4  pt-6 hover:shadow-xl   md:w-1/2"
-              >
-                <div className="flex w-full items-center justify-between space-x-2">
-                  <h1>{value.name}</h1>
+        {data?.map((value) => {
+          return (
+            <div
+              key={value.id}
+              className="w-full rounded-md border border-gray-600 px-4  pt-6 hover:shadow-xl   md:w-1/2"
+            >
+              <div className="flex w-full items-center justify-between space-x-2">
+                <h1>{value.name}</h1>
 
-                  <div className="flex space-x-2">
-                    {value.User.length > 1
-                      ? value.User.map((vl, ix) => {
-                          return (
-                            <div
-                              key={ix}
-                              className="flex h-8 w-8 items-center justify-center rounded-full bg-sky-200 uppercase"
-                            >
-                              <h1 className="text-sky-900">
-                                {vl.email[0].toUpperCase()}
-                              </h1>
-                            </div>
-                          );
-                        })
-                      : ""}
-                  </div>
-                </div>
-
-                <div className="mt-6 space-y-4">
-                  {value.todoItems.map((vl, ix) => {
-                    return (
-                      <TodoItemComponent
-                        key={ix}
-                        name={vl.name}
-                        complete={vl.complete}
-                      />
-                    );
-                  })}
-                </div>
-
-                <div className="flex justify-end py-2 ">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      openModalEdit();
-
-                      setEditInput({
-                        listid: value.id,
-                        listname: value.name,
-                        listItems: [...value.todoItems],
-                      });
-                    }}
-                    className="flex items-center rounded-full p-3 hover:bg-sky-100"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth="1.5"
-                      stroke="currentColor"
-                      className="h-6 w-6 text-sky-900"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
-                      />
-                    </svg>
-                  </button>
-
-                  <button
-                    className="flex items-center rounded-full p-3 hover:bg-sky-100"
-                    onClick={() => {
-                      openModalShare();
-                      setshareData((pv) => ({
-                        ...pv,
-                        todoId: value.id,
-                      }));
-                    }}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth="1.5"
-                      stroke="currentColor"
-                      className="h-6 w-6 text-sky-900"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"
-                      />
-                    </svg>
-                  </button>
+                <div className="flex space-x-2">
+                  {value.User.length > 1
+                    ? value.User.map((vl, ix) => {
+                        return (
+                          <div
+                            key={ix}
+                            className="flex h-8 w-8 items-center justify-center rounded-full bg-sky-200 uppercase"
+                          >
+                            <h1 className="text-sky-900">
+                              {vl.email[0].toUpperCase()}
+                            </h1>
+                          </div>
+                        );
+                      })
+                    : ""}
                 </div>
               </div>
-            );
-          })}
-        
+
+              <div className="mt-6 space-y-4">
+                {value.todoItems.map((vl, ix) => {
+                  return (
+                    <TodoItemComponent
+                      key={ix}
+                      name={vl.name}
+                      complete={vl.complete}
+                    />
+                  );
+                })}
+              </div>
+
+              <div className="flex justify-end py-2 ">
+                <button
+                  type="button"
+                  onClick={() => {
+                    openModalEdit();
+
+                    setEditInput({
+                      listid: value.id,
+                      listname: value.name,
+                      listItems: [...value.todoItems],
+                    });
+                  }}
+                  className="flex items-center rounded-full p-3 hover:bg-sky-100"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className="h-6 w-6 text-sky-900"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
+                    />
+                  </svg>
+                </button>
+
+                <button
+                  className="flex items-center rounded-full p-3 hover:bg-sky-100"
+                  onClick={() => {
+                    openModalShare();
+                    setshareData((pv) => ({
+                      ...pv,
+                      todoId: value.id,
+                    }));
+                  }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className="h-6 w-6 text-sky-900"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       {/* Add  a Todo */}
@@ -688,7 +766,7 @@ export default function HomeScreen(): JSX.Element {
                     <h1>Enter email to share this todo</h1>
                     <Dialog.Title as="h3" className=" leading-6 text-gray-900">
                       <input
-                        type="text"
+                        type="malito"
                         value={shareData.email}
                         onChange={(e) => {
                           setshareData((pv) => ({
@@ -707,7 +785,7 @@ export default function HomeScreen(): JSX.Element {
                         className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                         onClick={() => {
                           submitShareTodo();
-                          sendEmail();
+                          // sendEmail();
                         }}
                       >
                         Share

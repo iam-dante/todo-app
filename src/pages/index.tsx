@@ -11,7 +11,7 @@ import { Audio } from "react-loader-spinner";
 export default function App() {
   const [user, loading, error] = useAuthState(FirebaseAuth);
 
-  toast.error("Something went wrong");
+ 
   if (loading) {
     return (
       <div className="flex h-screen items-center justify-center">
@@ -27,7 +27,7 @@ export default function App() {
 
   if (error) {
     return (
-     <Toaster/>
+     toast.error(String(error))
     );
   }
 
