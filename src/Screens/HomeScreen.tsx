@@ -114,6 +114,8 @@ export default function HomeScreen(): JSX.Element {
 
   // Create a todo
   const submitCreateTodo = async () => {
+
+    seLSend(true)
     const res = await axios({
       method: "POST",
       url: "/api/createTodo",
@@ -123,6 +125,7 @@ export default function HomeScreen(): JSX.Element {
         todoListItems: [...inputFields.listItems],
       },
     });
+    seLSend(false)
     setIsOpen(false);
     setInputFields({
       listname: "",
